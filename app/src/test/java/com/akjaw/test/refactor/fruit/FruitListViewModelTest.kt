@@ -1,11 +1,9 @@
 package com.akjaw.test.refactor.fruit
 
-import app.cash.turbine.test
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -18,15 +16,20 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class FruitListViewModelTest {
 
+    companion object {
+        private val FRUITS = listOf(Fruit(name = "Apple"), Fruit(name = "Banana"), Fruit(name = "Cherry"))
+        private val FRUITS_WITH_FILTER = listOf(Fruit(name = "Apple"), Fruit(name = "Banana"))
+    }
+
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var fakeFruitApi: FakeFruitApi
-    private lateinit var fruitListViewModel: FruitListViewModel
+    private lateinit var systemUnderTest: FruitListViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         fakeFruitApi = FakeFruitApi()
-        fruitListViewModel = FruitListViewModel(fakeFruitApi)
+        systemUnderTest = FruitListViewModel(fakeFruitApi)
     }
 
     @After
@@ -41,7 +44,48 @@ internal class FruitListViewModelTest {
         fruits shouldHaveSize 39
     }
 
-    // TODO Other test some kind of selection tracker?
+    @Test
+    fun `Initialize updates the state with fruits fetched from the API`() {
+        fakeFruitApi.fruits = FRUITS
+
+        systemUnderTest.initialize()
+
+        systemUnderTest.fruits.value shouldBe FRUITS
+    }
+
+    @Test
+    fun `Filtering by name updates the state to include only matching case insensitive fruit names`() {
+        fakeFruitApi.fruits = FRUITS
+        systemUnderTest.initialize()
+
+        systemUnderTest.filterByName("a")
+
+        systemUnderTest.fruits.value shouldBe FRUITS_WITH_FILTER
+    }
+
+    @Test
+    fun `Removing the name filter updates the state with the original list`() {
+        fakeFruitApi.fruits = FRUITS
+        systemUnderTest.initialize()
+        systemUnderTest.filterByName("a")
+
+        systemUnderTest.filterByName("")
+
+        systemUnderTest.fruits.value shouldBe FRUITS
+    }
+
+    @Test
+    fun `Initializing again correctly applies existing name filter`() {
+        fakeFruitApi.fruits = FRUITS
+        systemUnderTest.initialize()
+        systemUnderTest.filterByName("a")
+
+        systemUnderTest.initialize()
+
+        systemUnderTest.fruits.value shouldBe FRUITS_WITH_FILTER
+    }
+
+    // TODO Other test some kind of selection tracker? where we can more easily extract logic classes?
 }
 
 class FakeFruitApi : FruitApi {

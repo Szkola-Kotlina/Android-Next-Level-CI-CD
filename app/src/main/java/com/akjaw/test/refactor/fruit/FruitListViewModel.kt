@@ -16,11 +16,14 @@ class FruitListViewModel(
     private val fruitApi: FruitApi,
 ) : ViewModel() {
 
-    val fruits = MutableStateFlow(emptyList<Fruit>())
+    private var currentSearchQuery: String = ""
+    private var originalFruits = emptyList<Fruit>()
+    val fruits = MutableStateFlow(originalFruits)
 
     // TODO make it use ViewModelScope
     fun initialize() = viewModelScope.launch {
-        fruits.value = fruitApi.getFruits()
+        originalFruits = fruitApi.getFruits()
+        filterByName(currentSearchQuery)
     }
 
     fun sortByNutrition(name: String) {
@@ -28,7 +31,12 @@ class FruitListViewModel(
     }
 
     fun filterByName(searchQuery: String) {
-        TODO()
+        currentSearchQuery = searchQuery
+        if (searchQuery.isEmpty()) {
+            fruits.value = originalFruits
+        } else {
+            fruits.value = originalFruits.filter { it.name.contains(searchQuery, ignoreCase = true) }
+        }
     }
 
     fun addToFavorite(fruitId: Int) {

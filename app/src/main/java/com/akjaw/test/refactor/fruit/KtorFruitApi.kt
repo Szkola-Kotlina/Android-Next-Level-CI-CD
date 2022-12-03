@@ -47,7 +47,7 @@ class KtorFruitApi : FruitApi {
         }
     }
 
-    override suspend fun getFruits(): List<Fruit> =
+    override suspend fun getFruits(): List<Fruit> = // TODO missing error handling
         client.get("https://www.fruityvice.com/api/fruit/all").body()
 }
 
