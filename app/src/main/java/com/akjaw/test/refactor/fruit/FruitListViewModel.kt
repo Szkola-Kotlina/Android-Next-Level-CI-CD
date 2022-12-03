@@ -15,6 +15,7 @@ class FruitListViewModel(
         const val FAT = 3
         const val CALORIES = 4
         const val SUGAR = 5
+        const val NO_SORTING = 6
     }
 
     private var currentNutritionSort: Int = -1
@@ -35,10 +36,9 @@ class FruitListViewModel(
             FAT -> fruits.value = fruits.value.sortedBy { it.nutritions.fat }
             CALORIES -> fruits.value = fruits.value.sortedBy { it.nutritions.calories }
             SUGAR -> fruits.value = fruits.value.sortedBy { it.nutritions.sugar }
+            else -> fruits.value = fruits.value.sortedBy { it.name }
         }
     }
-
-    // TODO remove sorting function?
 
     fun filterByName(searchQuery: String) {
         currentSearchQuery = searchQuery

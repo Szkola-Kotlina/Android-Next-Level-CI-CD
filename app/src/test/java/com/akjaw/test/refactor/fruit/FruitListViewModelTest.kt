@@ -46,8 +46,8 @@ internal class FruitListViewModelTest {
     }
 
     @Test
-    fun `Initialize updates the state with fruits fetched from the API`() {
-        fakeFruitApi.fruits = FRUITS
+    fun `Initialize updates the state with fruits fetched from the API sorted by name`() {
+        fakeFruitApi.fruits = FRUITS.reversed()
 
         systemUnderTest.initialize()
 
@@ -211,6 +211,28 @@ internal class FruitListViewModelTest {
             shouldHaveSize(2)
             get(0).name shouldBe "Banana"
             get(1).name shouldBe "Apple"
+        }
+    }
+
+    @Test
+    fun `Removing sorting brings back original sorting`() {
+        fakeFruitApi.fruits = listOf(
+            Fruit(name = "Apple", nutritions = Nutritions(carbohydrates = 3f)),
+            Fruit(name = "Banana", nutritions = Nutritions(carbohydrates = 1f)),
+            Fruit(name = "Cherry", nutritions = Nutritions(carbohydrates = 2f)),
+        )
+        systemUnderTest.initialize()
+        systemUnderTest.sortByNutrition(FruitListViewModel.CARBOHYDRATES)
+
+        systemUnderTest.sortByNutrition(FruitListViewModel.NO_SORTING)
+        systemUnderTest.sortByNutrition(FruitListViewModel.NO_SORTING)
+        systemUnderTest.sortByNutrition(FruitListViewModel.NO_SORTING)
+
+        assertSoftly(systemUnderTest.fruits.value) {
+            shouldHaveSize(3)
+            get(0).name shouldBe "Apple"
+            get(1).name shouldBe "Banana"
+            get(2).name shouldBe "Cherry"
         }
     }
 
