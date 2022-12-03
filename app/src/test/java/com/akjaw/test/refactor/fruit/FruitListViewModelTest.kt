@@ -236,6 +236,67 @@ internal class FruitListViewModelTest {
         }
     }
 
+    @Test
+    fun `Initially the favorite fruits are empty`() {
+        systemUnderTest.favoriteFruitIds.value shouldBe emptyList()
+    }
+
+    @Test
+    fun `Adding a favorite fruit updates the favorite list`() {
+        systemUnderTest.addToFavorite(1)
+
+        systemUnderTest.favoriteFruitIds.value shouldBe listOf(1)
+    }
+
+    @Test
+    fun `Adding the same favorite fruit multiple times does not duplicate the id`() {
+        systemUnderTest.addToFavorite(1)
+        systemUnderTest.addToFavorite(1)
+        systemUnderTest.addToFavorite(1)
+        systemUnderTest.addToFavorite(1)
+
+        systemUnderTest.favoriteFruitIds.value shouldBe listOf(1)
+    }
+
+    @Test
+    fun `Favorite fruits are placed at the top when there is no sorting`() {
+        fakeFruitApi.fruits = listOf(
+            Fruit(name = "Apple", id = 3),
+            Fruit(name = "Banana", id = 2),
+            Fruit(name = "Cherry", id = 1),
+        )
+        systemUnderTest.initialize()
+
+        systemUnderTest.addToFavorite(1)
+
+        assertSoftly(systemUnderTest.fruits.value) {
+            shouldHaveSize(3)
+            get(0).name shouldBe "Cherry"
+            get(1).name shouldBe "Apple"
+            get(2).name shouldBe "Banana"
+        }
+    }
+
+    @Test
+    fun `Favorite fruits dont change the activated sorting`() {
+        fakeFruitApi.fruits = listOf(
+            Fruit(name = "Apple", id = 3),
+            Fruit(name = "Banana", id = 2),
+            Fruit(name = "Cherry", id = 1),
+        )
+        systemUnderTest.initialize()
+        systemUnderTest.sortByNutrition(FruitListViewModel.CARBOHYDRATES)
+
+        systemUnderTest.addToFavorite(1)
+
+        assertSoftly(systemUnderTest.fruits.value) {
+            shouldHaveSize(3)
+            get(0).name shouldBe "Apple"
+            get(1).name shouldBe "Banana"
+            get(2).name shouldBe "Cherry"
+        }
+    }
+
     private fun nutritionSortingTestCase(
         nutrition: Int,
         fruits: List<Fruit>,

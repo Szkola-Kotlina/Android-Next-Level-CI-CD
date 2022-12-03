@@ -22,6 +22,7 @@ class FruitListViewModel(
     private var currentSearchQuery: String = ""
     private var originalFruits = emptyList<Fruit>()
     val fruits = MutableStateFlow(originalFruits)
+    val favoriteFruitIds = MutableStateFlow(emptyList<Int>())
 
     fun initialize() = viewModelScope.launch {
         originalFruits = fruitApi.getFruits()
@@ -36,7 +37,9 @@ class FruitListViewModel(
             FAT -> fruits.value = fruits.value.sortedBy { it.nutritions.fat }
             CALORIES -> fruits.value = fruits.value.sortedBy { it.nutritions.calories }
             SUGAR -> fruits.value = fruits.value.sortedBy { it.nutritions.sugar }
-            else -> fruits.value = fruits.value.sortedBy { it.name }
+            else -> fruits.value = fruits.value
+                .sortedBy { it.name }
+                .sortedBy { favoriteFruitIds.value.contains(it.id).not() }
         }
     }
 
@@ -51,10 +54,10 @@ class FruitListViewModel(
     }
 
     fun addToFavorite(fruitId: Int) {
-        TODO()
+        if (favoriteFruitIds.value.contains(fruitId)) return
+        favoriteFruitIds.value = favoriteFruitIds.value + fruitId
+        sortByNutrition(currentNutritionSort)
     }
-
-    // TODO is it worth adding anything else?
 }
 
 /* Response
