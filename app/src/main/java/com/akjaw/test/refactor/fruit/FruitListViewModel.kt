@@ -2,41 +2,52 @@ package com.akjaw.test.refactor.fruit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.get
-import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 
 class FruitListViewModel(
     private val fruitApi: FruitApi,
 ) : ViewModel() {
 
+    companion object {
+        const val CARBOHYDRATES = 1
+        const val PROTEIN = 2
+        const val FAT = 3
+        const val CALORIES = 4
+        const val SUGAR = 5
+    }
+
+    private var currentNutritionSort: Int = -1
     private var currentSearchQuery: String = ""
     private var originalFruits = emptyList<Fruit>()
     val fruits = MutableStateFlow(originalFruits)
 
-    // TODO make it use ViewModelScope
     fun initialize() = viewModelScope.launch {
         originalFruits = fruitApi.getFruits()
         filterByName(currentSearchQuery)
     }
 
-    fun sortByNutrition(name: String) {
-        TODO()
+    fun sortByNutrition(nutrition: Int) {
+        currentNutritionSort = nutrition
+        when (nutrition) {
+            CARBOHYDRATES -> fruits.value = fruits.value.sortedBy { it.nutritions.carbohydrates }
+            PROTEIN -> fruits.value = fruits.value.sortedBy { it.nutritions.protein }
+            FAT -> fruits.value = fruits.value.sortedBy { it.nutritions.fat }
+            CALORIES -> fruits.value = fruits.value.sortedBy { it.nutritions.calories }
+            SUGAR -> fruits.value = fruits.value.sortedBy { it.nutritions.sugar }
+        }
     }
+
+    // TODO remove sorting function?
 
     fun filterByName(searchQuery: String) {
         currentSearchQuery = searchQuery
-        if (searchQuery.isEmpty()) {
+        if (searchQuery == "") {
             fruits.value = originalFruits
         } else {
             fruits.value = originalFruits.filter { it.name.contains(searchQuery, ignoreCase = true) }
         }
+        sortByNutrition(currentNutritionSort)
     }
 
     fun addToFavorite(fruitId: Int) {
