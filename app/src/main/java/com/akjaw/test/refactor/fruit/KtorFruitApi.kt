@@ -1,41 +1,54 @@
 package com.akjaw.test.refactor.fruit
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-class FruitListViewModel(
-    private val fruitApi: FruitApi,
-) : ViewModel() {
 
-    val fruits = MutableStateFlow(emptyList<Fruit>())
+@Serializable
+data class Fruit(
+    val name: String = "",
+    val id: Int = -1,
+    val family: String = "",
+    val order: String = "",
+    val nutritions: Nutritions = Nutritions()
+)
 
-    // TODO make it use ViewModelScope
-    fun initialize() = viewModelScope.launch {
-        fruits.value = fruitApi.getFruits()
+@Serializable
+data class Nutritions(
+    val carbohydrates: Float = 0.0f,
+    val protein: Float = 0.0f,
+    val fat: Float = 0.0f,
+    val calories: Float = 0.0f,
+    val sugar: Float = 0.0f,
+)
+
+interface FruitApi {
+
+    suspend fun getFruits(): List<Fruit>
+}
+
+class KtorFruitApi : FruitApi {
+
+    private val client = HttpClient(CIO) {
+        install(ContentNegotiation) {
+            json(
+                Json {
+                    prettyPrint = true
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                }
+            )
+        }
     }
 
-    fun sortByNutrition(name: String) {
-        TODO()
-    }
-
-    fun filterByName(searchQuery: String) {
-        TODO()
-    }
-
-    fun addToFavorite(fruitId: Int) {
-        TODO()
-    }
-
-    // TODO is it worth adding anything else?
+    override suspend fun getFruits(): List<Fruit> =
+        client.get("https://www.fruityvice.com/api/fruit/all").body()
 }
 
 /* Response

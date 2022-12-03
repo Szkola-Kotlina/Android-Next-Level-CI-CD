@@ -12,18 +12,21 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class FruitListViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
+    private lateinit var fakeFruitApi: FakeFruitApi
     private lateinit var fruitListViewModel: FruitListViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        fruitListViewModel = FruitListViewModel()
+        fakeFruitApi = FakeFruitApi()
+        fruitListViewModel = FruitListViewModel(fakeFruitApi)
     }
 
     @After
@@ -32,10 +35,18 @@ internal class FruitListViewModelTest {
     }
 
     @Test
-    fun aa() = runTest(testDispatcher) {
-        fruitListViewModel.initialize()
-        fruitListViewModel.fruits.test {
-            awaitItem() shouldHaveSize 39
-        }
+    @Ignore
+    fun apiCall() = runTest(testDispatcher) {
+        val fruits = KtorFruitApi().getFruits()
+        fruits shouldHaveSize 39
     }
+
+    // TODO Other test some kind of selection tracker?
+}
+
+class FakeFruitApi : FruitApi {
+
+    var fruits: List<Fruit> = emptyList()
+
+    override suspend fun getFruits(): List<Fruit> = fruits
 }
