@@ -4,8 +4,26 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+/* Next steps:
+- Prepare a document with potential refactors two groups:
+  - Internal changes
+  - Contract changes
+- Perform these refactors
+- Do some things with test?
+ */
+/* Refactors:
+- favorites to a flow
+- sorting to a flow?
+- currentSearchQuery to a flow?
+- Clean up mutable outside properties
+- Extract a FruitSorter for sorting and managing favorites
+ */
 class FruitListViewModelFactory : ViewModelProvider.Factory {
 
     private val api = KtorFruitApi()
@@ -28,45 +46,53 @@ class FruitListViewModel(
         const val NO_SORTING = 6
     }
 
-    private var currentNutritionSort: Int = -1
-    private var currentSearchQuery: String = ""
+    private var currentNutritionSort: MutableStateFlow<Int> = MutableStateFlow(-1)
+    private var currentSearchQuery: MutableStateFlow<String> = MutableStateFlow("")
     private var originalFruits = emptyList<Fruit>()
-    val fruits = MutableStateFlow(originalFruits)
+    private val internalFruits = MutableStateFlow(originalFruits)
     val favoriteFruitIds = MutableStateFlow(emptyList<Int>())
+    val fruits: StateFlow<List<Fruit>> =
+        combine(internalFruits, favoriteFruitIds) { fruits, favorites ->
+            fruits.sort(currentNutritionSort.value, favorites)
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun initialize() = viewModelScope.launch {
         originalFruits = fruitApi.getFruits()
-        filterByName(currentSearchQuery)
+        filterByName(currentSearchQuery.value)
     }
 
     fun sortByNutrition(nutrition: Int) {
-        currentNutritionSort = nutrition
-        when (nutrition) {
-            CARBOHYDRATES -> fruits.value = fruits.value.sortedBy { it.nutritions.carbohydrates }
-            PROTEIN -> fruits.value = fruits.value.sortedBy { it.nutritions.protein }
-            FAT -> fruits.value = fruits.value.sortedBy { it.nutritions.fat }
-            CALORIES -> fruits.value = fruits.value.sortedBy { it.nutritions.calories }
-            SUGAR -> fruits.value = fruits.value.sortedBy { it.nutritions.sugar }
-            else -> fruits.value = fruits.value
-                .sortedBy { it.name }
-                .sortedBy { favoriteFruitIds.value.contains(it.id).not() }
-        }
+        currentNutritionSort.value = nutrition
+        val fruits = internalFruits.value
+        this.internalFruits.value = fruits.sort(nutrition, favoriteFruitIds.value)
+    }
+
+    private fun List<Fruit>.sort(
+        nutrition: Int,
+        favorites: List<Int>
+    ): List<Fruit> = when (nutrition) {
+        CARBOHYDRATES -> sortedBy { it.nutritions.carbohydrates }
+        PROTEIN -> sortedBy { it.nutritions.protein }
+        FAT -> sortedBy { it.nutritions.fat }
+        CALORIES -> sortedBy { it.nutritions.calories }
+        SUGAR -> sortedBy { it.nutritions.sugar }
+        else -> sortedBy { it.name }
+            .sortedBy { favorites.contains(it.id).not() }
     }
 
     fun filterByName(searchQuery: String) {
-        currentSearchQuery = searchQuery
+        currentSearchQuery.value = searchQuery
         if (searchQuery == "") {
-            fruits.value = originalFruits
+            internalFruits.value = originalFruits
         } else {
-            fruits.value = originalFruits.filter { it.name.contains(searchQuery, ignoreCase = true) }
+            internalFruits.value = originalFruits.filter { it.name.contains(searchQuery, ignoreCase = true) }
         }
-        sortByNutrition(currentNutritionSort)
+        sortByNutrition(currentNutritionSort.value)
     }
 
     fun addToFavorite(fruitId: Int) {
         if (favoriteFruitIds.value.contains(fruitId)) return
         favoriteFruitIds.value = favoriteFruitIds.value + fruitId
-        sortByNutrition(currentNutritionSort)
     }
 }
 
