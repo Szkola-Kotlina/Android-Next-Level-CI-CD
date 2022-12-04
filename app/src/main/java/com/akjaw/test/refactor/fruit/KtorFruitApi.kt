@@ -1,9 +1,13 @@
 package com.akjaw.test.refactor.fruit
 
+import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.Serializable
@@ -14,8 +18,8 @@ import kotlinx.serialization.json.Json
 data class Fruit(
     val name: String = "",
     val id: Int = -1,
-    val family: String = "",
-    val order: String = "",
+    val family: String = "", // TODO remove?
+    val order: String = "", // TODO remove?
     val nutritions: Nutritions = Nutritions()
 )
 
@@ -36,6 +40,15 @@ interface FruitApi {
 class KtorFruitApi : FruitApi {
 
     private val client = HttpClient(CIO) {
+        expectSuccess = true
+        install(Logging) {
+            logger = object : Logger {
+                override fun log(message: String) {
+                    Log.d("Ktor", message)
+                }
+            }
+            level = LogLevel.ALL
+        }
         install(ContentNegotiation) {
             json(
                 Json {
@@ -47,8 +60,14 @@ class KtorFruitApi : FruitApi {
         }
     }
 
-    override suspend fun getFruits(): List<Fruit> = // TODO missing error handling
-        client.get("https://www.fruityvice.com/api/fruit/all").body()
+    override suspend fun getFruits(): List<Fruit> =
+        try {
+            val response = client.get("https://www.fruityvice.com/api/fruit/all")
+            response.body()
+        } catch (e: Exception) {
+            Log.e("Ktor", e.stackTraceToString())
+            emptyList()
+        }
 }
 
 /* Response

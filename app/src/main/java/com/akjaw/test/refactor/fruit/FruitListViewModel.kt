@@ -1,9 +1,19 @@
 package com.akjaw.test.refactor.fruit
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+
+class FruitListViewModelFactory : ViewModelProvider.Factory {
+
+    private val api = KtorFruitApi()
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return modelClass.getConstructor(FruitApi::class.java)
+            .newInstance(api)
+    }
+}
 
 class FruitListViewModel(
     private val fruitApi: FruitApi,
