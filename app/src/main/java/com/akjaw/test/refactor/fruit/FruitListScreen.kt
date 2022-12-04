@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Card
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.Icon
@@ -118,7 +119,11 @@ private fun FruitList(
     favorites: List<Int>,
     addToFavorite: (Int) -> Unit
 ) {
-    LazyColumn(Modifier.fillMaxHeight()) {
+    val state = rememberLazyListState()
+    LaunchedEffect(fruits, favorites) {
+        state.scrollToItem(0)
+    }
+    LazyColumn(Modifier.fillMaxHeight(), state = state) {
         items(items = fruits, key = { it.id }) { fruit ->
             val isFavorited = remember(favorites) { favorites.contains(fruit.id) }
             FruitItem(
