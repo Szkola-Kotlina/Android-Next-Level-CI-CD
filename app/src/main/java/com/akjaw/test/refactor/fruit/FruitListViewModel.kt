@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 - filter to flow
 - currentSearchQuery to a flow?
 - Clean up mutable outside properties
+- Const int to enum FruitListViewModel\.([A-Z])   ->   FruitListViewModel.Sorting.$1
 - Extract a FruitSorter for sorting and managing favorites
  */
 class FruitListViewModelFactory : ViewModelProvider.Factory {
@@ -39,18 +40,18 @@ class FruitListViewModel(
     private val fruitApi: FruitApi,
 ) : ViewModel() {
 
-    companion object {
-        const val CARBOHYDRATES = 1
-        const val PROTEIN = 2
-        const val FAT = 3
-        const val CALORIES = 4
-        const val SUGAR = 5
-        const val NO_SORTING = 6
+    enum class Sorting {
+        CARBOHYDRATES,
+        PROTEIN,
+        FAT,
+        CALORIES,
+        SUGAR,
+        NO_SORTING,
     }
 
-    private var currentNutritionSort: MutableStateFlow<Int> = MutableStateFlow(-1)
-    private var currentSearchQuery: MutableStateFlow<String> = MutableStateFlow("")
-    private var originalFruits: MutableStateFlow<List<Fruit>> = MutableStateFlow(emptyList())
+    private val currentNutritionSort: MutableStateFlow<Sorting> = MutableStateFlow(Sorting.NO_SORTING)
+    private val currentSearchQuery: MutableStateFlow<String> = MutableStateFlow("")
+    private val originalFruits: MutableStateFlow<List<Fruit>> = MutableStateFlow(emptyList())
     val favoriteFruitIds = MutableStateFlow(emptyList<Int>())
     val fruits: StateFlow<List<Fruit>> =
         combine(
@@ -68,7 +69,7 @@ class FruitListViewModel(
         originalFruits.value = fruitApi.getFruits()
     }
 
-    fun sortByNutrition(nutrition: Int) {
+    fun sortByNutrition(nutrition: Sorting) {
         currentNutritionSort.value = nutrition
     }
 
@@ -82,15 +83,15 @@ class FruitListViewModel(
     }
 
     private fun List<Fruit>.sort(
-        nutrition: Int,
+        sorting: Sorting,
         favorites: List<Int>
-    ): List<Fruit> = when (nutrition) {
-        CARBOHYDRATES -> sortedBy { it.nutritions.carbohydrates }
-        PROTEIN -> sortedBy { it.nutritions.protein }
-        FAT -> sortedBy { it.nutritions.fat }
-        CALORIES -> sortedBy { it.nutritions.calories }
-        SUGAR -> sortedBy { it.nutritions.sugar }
-        else -> sortedBy { it.name }
+    ): List<Fruit> = when (sorting) {
+        Sorting.CARBOHYDRATES -> sortedBy { it.nutritions.carbohydrates }
+        Sorting.PROTEIN -> sortedBy { it.nutritions.protein }
+        Sorting.FAT -> sortedBy { it.nutritions.fat }
+        Sorting.CALORIES -> sortedBy { it.nutritions.calories }
+        Sorting.SUGAR -> sortedBy { it.nutritions.sugar }
+        Sorting.NO_SORTING -> sortedBy { it.name }
             .sortedBy { favorites.contains(it.id).not() }
     }
 
