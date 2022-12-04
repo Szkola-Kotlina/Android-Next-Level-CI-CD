@@ -19,7 +19,9 @@ import kotlinx.coroutines.launch
  */
 /* Refactors:
 - favorites to a flow
-- sorting to a flow?
+- sorting to a flow
+- original to a flow
+- filter to flow
 - currentSearchQuery to a flow?
 - Clean up mutable outside properties
 - Extract a FruitSorter for sorting and managing favorites
@@ -48,23 +50,35 @@ class FruitListViewModel(
 
     private var currentNutritionSort: MutableStateFlow<Int> = MutableStateFlow(-1)
     private var currentSearchQuery: MutableStateFlow<String> = MutableStateFlow("")
-    private var originalFruits = emptyList<Fruit>()
-    private val internalFruits = MutableStateFlow(originalFruits)
+    private var originalFruits: MutableStateFlow<List<Fruit>> = MutableStateFlow(emptyList())
     val favoriteFruitIds = MutableStateFlow(emptyList<Int>())
     val fruits: StateFlow<List<Fruit>> =
-        combine(internalFruits, favoriteFruitIds) { fruits, favorites ->
-            fruits.sort(currentNutritionSort.value, favorites)
+        combine(
+            originalFruits,
+            currentSearchQuery,
+            currentNutritionSort,
+            favoriteFruitIds,
+        ) { originalFruits, currentSearchQuery, currentNutritionSort, favorites ->
+            originalFruits
+                .filter(currentSearchQuery)
+                .sort(currentNutritionSort, favorites)
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun initialize() = viewModelScope.launch {
-        originalFruits = fruitApi.getFruits()
-        filterByName(currentSearchQuery.value)
+        originalFruits.value = fruitApi.getFruits()
     }
 
     fun sortByNutrition(nutrition: Int) {
         currentNutritionSort.value = nutrition
-        val fruits = internalFruits.value
-        this.internalFruits.value = fruits.sort(nutrition, favoriteFruitIds.value)
+    }
+
+    fun filterByName(searchQuery: String) {
+        currentSearchQuery.value = searchQuery
+    }
+
+    fun addToFavorite(fruitId: Int) {
+        if (favoriteFruitIds.value.contains(fruitId)) return
+        favoriteFruitIds.value = favoriteFruitIds.value + fruitId
     }
 
     private fun List<Fruit>.sort(
@@ -80,20 +94,8 @@ class FruitListViewModel(
             .sortedBy { favorites.contains(it.id).not() }
     }
 
-    fun filterByName(searchQuery: String) {
-        currentSearchQuery.value = searchQuery
-        if (searchQuery == "") {
-            internalFruits.value = originalFruits
-        } else {
-            internalFruits.value = originalFruits.filter { it.name.contains(searchQuery, ignoreCase = true) }
-        }
-        sortByNutrition(currentNutritionSort.value)
-    }
-
-    fun addToFavorite(fruitId: Int) {
-        if (favoriteFruitIds.value.contains(fruitId)) return
-        favoriteFruitIds.value = favoriteFruitIds.value + fruitId
-    }
+    private fun List<Fruit>.filter(searchQuery: String): List<Fruit> =
+        filter { it.name.contains(searchQuery, ignoreCase = true) }
 }
 
 /* Response
