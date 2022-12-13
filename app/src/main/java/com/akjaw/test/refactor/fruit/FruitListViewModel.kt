@@ -89,23 +89,10 @@ class FruitListViewModel(
         currentSearchQuery: String,
         currentNutritionSort: Sorting,
         favorites: List<Int>
-    ) = originalFruits
+    ): List<Fruit> = originalFruits
         .filter { it.name.contains(currentSearchQuery, ignoreCase = true) }
-        .sort(currentNutritionSort, favorites) // TODO move to later?
         .map { schema -> convert(schema, favorites.contains(schema.id)) }
-
-    private fun List<FruitSchema>.sort(
-        sorting: Sorting,
-        favorites: List<Int>
-    ): List<FruitSchema> = when (sorting) {
-        Sorting.CARBOHYDRATES -> sortedBy { it.nutritions.carbohydrates }
-        Sorting.PROTEIN -> sortedBy { it.nutritions.protein }
-        Sorting.FAT -> sortedBy { it.nutritions.fat }
-        Sorting.CALORIES -> sortedBy { it.nutritions.calories }
-        Sorting.SUGAR -> sortedBy { it.nutritions.sugar }
-        Sorting.NO_SORTING -> sortedBy { it.name }
-            .sortedBy { favorites.contains(it.id).not() }
-    }
+        .sort(currentNutritionSort)
 
     private fun convert(schema: FruitSchema, isFavorited: Boolean): Fruit =
         Fruit(
@@ -120,6 +107,18 @@ class FruitListViewModel(
             ),
             isFavorited = isFavorited
         )
+
+    private fun List<Fruit>.sort(
+        sorting: Sorting,
+    ): List<Fruit> = when (sorting) {
+        Sorting.CARBOHYDRATES -> sortedBy { it.nutritions.carbohydrates }
+        Sorting.PROTEIN -> sortedBy { it.nutritions.protein }
+        Sorting.FAT -> sortedBy { it.nutritions.fat }
+        Sorting.CALORIES -> sortedBy { it.nutritions.calories }
+        Sorting.SUGAR -> sortedBy { it.nutritions.sugar }
+        Sorting.NO_SORTING -> sortedBy { it.name }
+            .sortedBy { it.isFavorited.not() }
+    }
 }
 
 /* Response
