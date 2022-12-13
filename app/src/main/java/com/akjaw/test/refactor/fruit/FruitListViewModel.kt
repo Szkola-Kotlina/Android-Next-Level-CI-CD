@@ -38,6 +38,7 @@ class FruitListViewModelFactory : ViewModelProvider.Factory {
 
 class FruitListViewModel(
     private val fruitApi: FruitApi,
+    private val favoriteRepository: FavoriteRepository = FavoriteRepository(),
 ) : ViewModel() {
 
     enum class Sorting {
@@ -52,7 +53,7 @@ class FruitListViewModel(
     private val originalFruits: MutableStateFlow<List<Fruit>> = MutableStateFlow(emptyList())
     private val currentSearchQuery: MutableStateFlow<String> = MutableStateFlow("")
     private val currentNutritionSort: MutableStateFlow<Sorting> = MutableStateFlow(Sorting.NO_SORTING)
-    val favoriteFruitIds = MutableStateFlow(emptyList<Int>())
+    val favoriteFruitIds: StateFlow<List<Int>> = favoriteRepository.favoriteFruitIds
     val fruits: StateFlow<List<Fruit>> =
         combine(
             originalFruits,
@@ -75,8 +76,7 @@ class FruitListViewModel(
     }
 
     fun addToFavorite(fruitId: Int) {
-        if (favoriteFruitIds.value.contains(fruitId)) return
-        favoriteFruitIds.value = favoriteFruitIds.value + fruitId
+        favoriteRepository.addToFavorite(fruitId)
     }
 
     private fun transform(
