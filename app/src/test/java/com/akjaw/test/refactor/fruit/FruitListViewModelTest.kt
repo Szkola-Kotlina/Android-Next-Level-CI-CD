@@ -20,7 +20,8 @@ import org.junit.Test
 internal class FruitListViewModelTest {
 
     companion object {
-        private val FRUITS_SCHEMA = listOf(FruitSchema(name = "Apple"), FruitSchema(name = "Banana"), FruitSchema(name = "Cherry"))
+        private val FRUITS_SCHEMA =
+            listOf(FruitSchema(name = "Apple"), FruitSchema(name = "Banana"), FruitSchema(name = "Cherry"))
         private val FRUITS = listOf(Fruit(name = "Apple"), Fruit(name = "Banana"), Fruit(name = "Cherry"))
         private val FRUITS_WITH_FILTER = listOf(Fruit(name = "Apple"), Fruit(name = "Banana"))
     }
@@ -261,25 +262,32 @@ internal class FruitListViewModelTest {
     }
 
     @Test
-    fun `Initially the favorite fruits are empty`() {
-        systemUnderTest.favoriteFruitIds.value shouldBe emptyList()
+    fun `Initially the favorite status is false`() {
+        fakeFruitApi.fruits = listOf(FruitSchema(name = "Apple", id = 1))
+        systemUnderTest.initialize()
+
+        systemUnderTest.fruits.value.first().isFavorited shouldBe false
     }
 
     @Test
-    fun `Adding a favorite fruit updates the favorite list`() {
+    fun `Adding a favorite fruit updates the favorite flag`() {
+        fakeFruitApi.fruits = listOf(FruitSchema(name = "Apple", id = 1))
+        systemUnderTest.initialize()
+
         systemUnderTest.addToFavorite(1)
 
-        systemUnderTest.favoriteFruitIds.value shouldBe listOf(1)
+        systemUnderTest.fruits.value.first().isFavorited shouldBe true
     }
 
     @Test
-    fun `Adding the same favorite fruit multiple times does not duplicate the id`() {
-        systemUnderTest.addToFavorite(1)
-        systemUnderTest.addToFavorite(1)
+    fun `Adding the same favorite fruit multiple times does change the favorite flag`() {
+        fakeFruitApi.fruits = listOf(FruitSchema(name = "Apple", id = 1))
+        systemUnderTest.initialize()
+
         systemUnderTest.addToFavorite(1)
         systemUnderTest.addToFavorite(1)
 
-        systemUnderTest.favoriteFruitIds.value shouldBe listOf(1)
+        systemUnderTest.fruits.value.first().isFavorited shouldBe true
     }
 
     @Test

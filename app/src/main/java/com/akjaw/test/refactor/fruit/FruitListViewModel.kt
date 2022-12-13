@@ -27,14 +27,17 @@ import kotlinx.coroutines.launch
 - currentSearchQuery to a flow?
 - Clean up mutable outside properties
 - Const int to enum FruitListViewModel\.([A-Z])   ->   FruitListViewModel.Sorting.$1
-- Extract a FruitSorter for sorting and managing favorites
+- Clean up helper functions
+- Add Favorite repository
+- Extract Fruit data class
  */
 class FruitListViewModelFactory : ViewModelProvider.Factory {
 
     private val api = KtorFruitApi()
+    private val favoriteRepository = FavoriteRepository()
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return modelClass.getConstructor(FruitApi::class.java)
-            .newInstance(api)
+        return modelClass.getConstructor(FruitApi::class.java, FavoriteRepository::class.java)
+            .newInstance(api, favoriteRepository)
     }
 }
 
@@ -55,7 +58,7 @@ class FruitListViewModel(
     private val originalFruits: MutableStateFlow<List<FruitSchema>> = MutableStateFlow(emptyList())
     private val currentSearchQuery: MutableStateFlow<String> = MutableStateFlow("")
     private val currentNutritionSort: MutableStateFlow<Sorting> = MutableStateFlow(Sorting.NO_SORTING)
-    val favoriteFruitIds: StateFlow<List<Int>> = favoriteRepository.favoriteFruitIds
+    private val favoriteFruitIds: StateFlow<List<Int>> = favoriteRepository.favoriteFruitIds
     val fruits: StateFlow<List<Fruit>> =
         combine(
             originalFruits,
@@ -88,8 +91,8 @@ class FruitListViewModel(
         favorites: List<Int>
     ) = originalFruits
         .filter { it.name.contains(currentSearchQuery, ignoreCase = true) }
-        .sort(currentNutritionSort, favorites)
-        .map(::convert)
+        .sort(currentNutritionSort, favorites) // TODO move to later?
+        .map { schema -> convert(schema, favorites.contains(schema.id)) }
 
     private fun List<FruitSchema>.sort(
         sorting: Sorting,
@@ -104,7 +107,7 @@ class FruitListViewModel(
             .sortedBy { favorites.contains(it.id).not() }
     }
 
-    private fun convert(schema: FruitSchema): Fruit =
+    private fun convert(schema: FruitSchema, isFavorited: Boolean): Fruit =
         Fruit(
             name = schema.name,
             id = schema.id,
@@ -114,7 +117,8 @@ class FruitListViewModel(
                 schema.nutritions.fat,
                 schema.nutritions.calories,
                 schema.nutritions.sugar,
-            )
+            ),
+            isFavorited = isFavorited
         )
 }
 

@@ -3,7 +3,8 @@ package com.akjaw.test.refactor.fruit.model
 data class Fruit(
     val name: String = "",
     val id: Int = -1,
-    val nutritions: Nutritions = Nutritions()
+    val nutritions: Nutritions = Nutritions(),
+    val isFavorited: Boolean = false,
 )
 
 data class Nutritions(

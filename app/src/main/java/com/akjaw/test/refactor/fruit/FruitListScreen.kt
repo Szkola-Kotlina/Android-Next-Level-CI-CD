@@ -38,7 +38,6 @@ import com.akjaw.test.refactor.fruit.model.Fruit
 @Composable
 fun FruitListScreen(viewModel: FruitListViewModel) {
     val fruits by viewModel.fruits.collectAsState()
-    val favorites by viewModel.favoriteFruitIds.collectAsState()
 
     LaunchedEffect(null) {
         viewModel.initialize()
@@ -46,7 +45,6 @@ fun FruitListScreen(viewModel: FruitListViewModel) {
 
     FruitListScreenContent(
         fruits = fruits,
-        favorites = favorites,
         filterByName = viewModel::filterByName,
         sortByNutrition = viewModel::sortByNutrition,
         addToFavorite = viewModel::addToFavorite,
@@ -56,7 +54,6 @@ fun FruitListScreen(viewModel: FruitListViewModel) {
 @Composable
 private fun FruitListScreenContent(
     fruits: List<Fruit>,
-    favorites: List<Int>,
     filterByName: (String) -> Unit,
     sortByNutrition: (FruitListViewModel.Sorting) -> Unit,
     addToFavorite: (Int) -> Unit
@@ -68,7 +65,6 @@ private fun FruitListScreenContent(
         )
         FruitList(
             fruits,
-            favorites,
             addToFavorite,
         )
     }
@@ -115,16 +111,15 @@ private fun TopActions(
 @Composable
 private fun FruitList(
     fruits: List<Fruit>,
-    favorites: List<Int>,
     addToFavorite: (Int) -> Unit
 ) {
     val state = rememberLazyListState()
-    LaunchedEffect(fruits, favorites) {
+    LaunchedEffect(fruits) {
         state.scrollToItem(0)
     }
     LazyColumn(Modifier.fillMaxHeight(), state = state) {
         items(items = fruits, key = { it.id }) { fruit ->
-            val isFavorited = remember(favorites) { favorites.contains(fruit.id) }
+            val isFavorited = remember(fruit) { fruit.isFavorited }
             FruitItem(
                 fruit = fruit,
                 isFavorited = isFavorited,
