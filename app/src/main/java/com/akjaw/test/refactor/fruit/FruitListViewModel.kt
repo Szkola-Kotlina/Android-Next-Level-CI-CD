@@ -49,9 +49,9 @@ class FruitListViewModel(
         NO_SORTING,
     }
 
-    private val currentNutritionSort: MutableStateFlow<Sorting> = MutableStateFlow(Sorting.NO_SORTING)
-    private val currentSearchQuery: MutableStateFlow<String> = MutableStateFlow("")
     private val originalFruits: MutableStateFlow<List<Fruit>> = MutableStateFlow(emptyList())
+    private val currentSearchQuery: MutableStateFlow<String> = MutableStateFlow("")
+    private val currentNutritionSort: MutableStateFlow<Sorting> = MutableStateFlow(Sorting.NO_SORTING)
     val favoriteFruitIds = MutableStateFlow(emptyList<Int>())
     val fruits: StateFlow<List<Fruit>> =
         combine(
@@ -59,11 +59,8 @@ class FruitListViewModel(
             currentSearchQuery,
             currentNutritionSort,
             favoriteFruitIds,
-        ) { originalFruits, currentSearchQuery, currentNutritionSort, favorites ->
-            originalFruits
-                .filter(currentSearchQuery)
-                .sort(currentNutritionSort, favorites)
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+            ::transform,
+        ).stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun initialize() = viewModelScope.launch {
         originalFruits.value = fruitApi.getFruits()
@@ -82,6 +79,15 @@ class FruitListViewModel(
         favoriteFruitIds.value = favoriteFruitIds.value + fruitId
     }
 
+    private fun transform(
+        originalFruits: List<Fruit>,
+        currentSearchQuery: String,
+        currentNutritionSort: Sorting,
+        favorites: List<Int>
+    ) = originalFruits
+        .filter { it.name.contains(currentSearchQuery, ignoreCase = true) }
+        .sort(currentNutritionSort, favorites)
+
     private fun List<Fruit>.sort(
         sorting: Sorting,
         favorites: List<Int>
@@ -94,9 +100,6 @@ class FruitListViewModel(
         Sorting.NO_SORTING -> sortedBy { it.name }
             .sortedBy { favorites.contains(it.id).not() }
     }
-
-    private fun List<Fruit>.filter(searchQuery: String): List<Fruit> =
-        filter { it.name.contains(searchQuery, ignoreCase = true) }
 }
 
 /* Response

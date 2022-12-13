@@ -302,7 +302,6 @@ internal class FruitListViewModelTest {
         }
     }
 
-    // TODO test for concurrent access?
     // TODO split test class into multiple classes?
     // TODO Other test some kind of selection tracker? where we can more easily extract logic classes?
 }
