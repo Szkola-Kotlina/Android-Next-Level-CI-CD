@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.akjaw.test.refactor.fruit.model.Fruit
 
 @Composable
 fun FruitListScreen(viewModel: FruitListViewModel) {
@@ -54,7 +55,7 @@ fun FruitListScreen(viewModel: FruitListViewModel) {
 
 @Composable
 private fun FruitListScreenContent(
-    fruits: List<FruitSchema>,
+    fruits: List<Fruit>,
     favorites: List<Int>,
     filterByName: (String) -> Unit,
     sortByNutrition: (FruitListViewModel.Sorting) -> Unit,
@@ -113,7 +114,7 @@ private fun TopActions(
 
 @Composable
 private fun FruitList(
-    fruits: List<FruitSchema>,
+    fruits: List<Fruit>,
     favorites: List<Int>,
     addToFavorite: (Int) -> Unit
 ) {
@@ -134,7 +135,7 @@ private fun FruitList(
 }
 
 @Composable
-private fun FruitItem(fruit: FruitSchema, isFavorited: Boolean, onFavoriteClick: () -> Unit) {
+private fun FruitItem(fruit: Fruit, isFavorited: Boolean, onFavoriteClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(4.dp),
         backgroundColor = Color(0xFFF0F0F0),

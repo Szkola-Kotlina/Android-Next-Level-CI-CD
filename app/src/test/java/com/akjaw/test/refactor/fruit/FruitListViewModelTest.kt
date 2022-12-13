@@ -1,5 +1,7 @@
 package com.akjaw.test.refactor.fruit
 
+import com.akjaw.test.refactor.fruit.model.Fruit
+import com.akjaw.test.refactor.fruit.model.Nutritions
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -18,8 +20,9 @@ import org.junit.Test
 internal class FruitListViewModelTest {
 
     companion object {
-        private val FRUITS = listOf(FruitSchema(name = "Apple"), FruitSchema(name = "Banana"), FruitSchema(name = "Cherry"))
-        private val FRUITS_WITH_FILTER = listOf(FruitSchema(name = "Apple"), FruitSchema(name = "Banana"))
+        private val FRUITS_SCHEMA = listOf(FruitSchema(name = "Apple"), FruitSchema(name = "Banana"), FruitSchema(name = "Cherry"))
+        private val FRUITS = listOf(Fruit(name = "Apple"), Fruit(name = "Banana"), Fruit(name = "Cherry"))
+        private val FRUITS_WITH_FILTER = listOf(Fruit(name = "Apple"), Fruit(name = "Banana"))
     }
 
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -46,8 +49,39 @@ internal class FruitListViewModelTest {
     }
 
     @Test
+    fun `The fruit structure is correctly converted`() {
+        fakeFruitApi.fruits = listOf(
+            FruitSchema(
+                name = "Apple",
+                id = 2,
+                nutritions = NutritionsSchema(
+                    carbohydrates = 1f,
+                    protein = 2f,
+                    fat = 3f,
+                    calories = 4f,
+                    sugar = 5f,
+                )
+            )
+        )
+
+        systemUnderTest.initialize()
+
+        systemUnderTest.fruits.value.first() shouldBe Fruit(
+            name = "Apple",
+            id = 2,
+            nutritions = Nutritions(
+                carbohydrates = 1f,
+                protein = 2f,
+                fat = 3f,
+                calories = 4f,
+                sugar = 5f,
+            )
+        )
+    }
+
+    @Test
     fun `Initialize updates the state with fruits fetched from the API sorted by name`() {
-        fakeFruitApi.fruits = FRUITS.reversed()
+        fakeFruitApi.fruits = FRUITS_SCHEMA.reversed()
 
         systemUnderTest.initialize()
 
@@ -56,7 +90,7 @@ internal class FruitListViewModelTest {
 
     @Test
     fun `Filtering by name updates the state to include only matching case insensitive fruit names`() {
-        fakeFruitApi.fruits = FRUITS
+        fakeFruitApi.fruits = FRUITS_SCHEMA
         systemUnderTest.initialize()
 
         systemUnderTest.filterByName("a")
@@ -66,7 +100,7 @@ internal class FruitListViewModelTest {
 
     @Test
     fun `Removing the name filter updates the state with the original list`() {
-        fakeFruitApi.fruits = FRUITS
+        fakeFruitApi.fruits = FRUITS_SCHEMA
         systemUnderTest.initialize()
         systemUnderTest.filterByName("a")
 
@@ -77,7 +111,7 @@ internal class FruitListViewModelTest {
 
     @Test
     fun `Initializing again correctly applies existing name filter`() {
-        fakeFruitApi.fruits = FRUITS
+        fakeFruitApi.fruits = FRUITS_SCHEMA
         systemUnderTest.initialize()
         systemUnderTest.filterByName("a")
 
@@ -290,7 +324,7 @@ internal class FruitListViewModelTest {
     private fun nutritionSortingTestCase(
         nutrition: FruitListViewModel.Sorting,
         fruits: List<FruitSchema>,
-        assertion: List<FruitSchema>.() -> Unit
+        assertion: List<Fruit>.() -> Unit
     ) {
         fakeFruitApi.fruits = fruits
         systemUnderTest.initialize()

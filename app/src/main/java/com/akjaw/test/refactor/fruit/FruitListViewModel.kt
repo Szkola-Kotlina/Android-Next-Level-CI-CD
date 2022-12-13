@@ -3,6 +3,8 @@ package com.akjaw.test.refactor.fruit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.akjaw.test.refactor.fruit.model.Fruit
+import com.akjaw.test.refactor.fruit.model.Nutritions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -54,7 +56,7 @@ class FruitListViewModel(
     private val currentSearchQuery: MutableStateFlow<String> = MutableStateFlow("")
     private val currentNutritionSort: MutableStateFlow<Sorting> = MutableStateFlow(Sorting.NO_SORTING)
     val favoriteFruitIds: StateFlow<List<Int>> = favoriteRepository.favoriteFruitIds
-    val fruits: StateFlow<List<FruitSchema>> =
+    val fruits: StateFlow<List<Fruit>> =
         combine(
             originalFruits,
             currentSearchQuery,
@@ -87,6 +89,7 @@ class FruitListViewModel(
     ) = originalFruits
         .filter { it.name.contains(currentSearchQuery, ignoreCase = true) }
         .sort(currentNutritionSort, favorites)
+        .map(::convert)
 
     private fun List<FruitSchema>.sort(
         sorting: Sorting,
@@ -100,6 +103,19 @@ class FruitListViewModel(
         Sorting.NO_SORTING -> sortedBy { it.name }
             .sortedBy { favorites.contains(it.id).not() }
     }
+
+    private fun convert(schema: FruitSchema): Fruit =
+        Fruit(
+            name = schema.name,
+            id = schema.id,
+            nutritions = Nutritions(
+                schema.nutritions.carbohydrates,
+                schema.nutritions.protein,
+                schema.nutritions.fat,
+                schema.nutritions.calories,
+                schema.nutritions.sugar,
+            )
+        )
 }
 
 /* Response
