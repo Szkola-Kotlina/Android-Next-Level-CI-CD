@@ -18,8 +18,8 @@ import org.junit.Test
 internal class FruitListViewModelTest {
 
     companion object {
-        private val FRUITS = listOf(Fruit(name = "Apple"), Fruit(name = "Banana"), Fruit(name = "Cherry"))
-        private val FRUITS_WITH_FILTER = listOf(Fruit(name = "Apple"), Fruit(name = "Banana"))
+        private val FRUITS = listOf(FruitSchema(name = "Apple"), FruitSchema(name = "Banana"), FruitSchema(name = "Cherry"))
+        private val FRUITS_WITH_FILTER = listOf(FruitSchema(name = "Apple"), FruitSchema(name = "Banana"))
     }
 
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -90,9 +90,9 @@ internal class FruitListViewModelTest {
     fun `Sorting by CARBOHYDRATES updates the state correctly`() = nutritionSortingTestCase(
         nutrition = FruitListViewModel.Sorting.CARBOHYDRATES,
         fruits = listOf(
-            Fruit(name = "Apple", nutritions = Nutritions(carbohydrates = 10f)),
-            Fruit(name = "Banana", nutritions = Nutritions(carbohydrates = 22f)),
-            Fruit(name = "Cherry", nutritions = Nutritions(carbohydrates = 11f)),
+            FruitSchema(name = "Apple", nutritions = NutritionsSchema(carbohydrates = 10f)),
+            FruitSchema(name = "Banana", nutritions = NutritionsSchema(carbohydrates = 22f)),
+            FruitSchema(name = "Cherry", nutritions = NutritionsSchema(carbohydrates = 11f)),
         ),
         assertion = {
             shouldHaveSize(3)
@@ -106,9 +106,9 @@ internal class FruitListViewModelTest {
     fun `Sorting by PROTEIN updates the state correctly`() = nutritionSortingTestCase(
         nutrition = FruitListViewModel.Sorting.PROTEIN,
         fruits = listOf(
-            Fruit(name = "Apple", nutritions = Nutritions(protein = 10f)),
-            Fruit(name = "Banana", nutritions = Nutritions(protein = 22f)),
-            Fruit(name = "Cherry", nutritions = Nutritions(protein = 11f)),
+            FruitSchema(name = "Apple", nutritions = NutritionsSchema(protein = 10f)),
+            FruitSchema(name = "Banana", nutritions = NutritionsSchema(protein = 22f)),
+            FruitSchema(name = "Cherry", nutritions = NutritionsSchema(protein = 11f)),
         ),
         assertion = {
             shouldHaveSize(3)
@@ -122,9 +122,9 @@ internal class FruitListViewModelTest {
     fun `Sorting by FAT updates the state correctly`() = nutritionSortingTestCase(
         nutrition = FruitListViewModel.Sorting.FAT,
         fruits = listOf(
-            Fruit(name = "Apple", nutritions = Nutritions(fat = 10f)),
-            Fruit(name = "Banana", nutritions = Nutritions(fat = 22f)),
-            Fruit(name = "Cherry", nutritions = Nutritions(fat = 11f)),
+            FruitSchema(name = "Apple", nutritions = NutritionsSchema(fat = 10f)),
+            FruitSchema(name = "Banana", nutritions = NutritionsSchema(fat = 22f)),
+            FruitSchema(name = "Cherry", nutritions = NutritionsSchema(fat = 11f)),
         ),
         assertion = {
             shouldHaveSize(3)
@@ -138,9 +138,9 @@ internal class FruitListViewModelTest {
     fun `Sorting by CALORIES updates the state correctly`() = nutritionSortingTestCase(
         nutrition = FruitListViewModel.Sorting.CALORIES,
         fruits = listOf(
-            Fruit(name = "Apple", nutritions = Nutritions(calories = 10f)),
-            Fruit(name = "Banana", nutritions = Nutritions(calories = 22f)),
-            Fruit(name = "Cherry", nutritions = Nutritions(calories = 11f)),
+            FruitSchema(name = "Apple", nutritions = NutritionsSchema(calories = 10f)),
+            FruitSchema(name = "Banana", nutritions = NutritionsSchema(calories = 22f)),
+            FruitSchema(name = "Cherry", nutritions = NutritionsSchema(calories = 11f)),
         ),
         assertion = {
             shouldHaveSize(3)
@@ -154,9 +154,9 @@ internal class FruitListViewModelTest {
     fun `Sorting by SUGAR updates the state correctly`() = nutritionSortingTestCase(
         nutrition = FruitListViewModel.Sorting.SUGAR,
         fruits = listOf(
-            Fruit(name = "Apple", nutritions = Nutritions(sugar = 10f)),
-            Fruit(name = "Banana", nutritions = Nutritions(sugar = 22f)),
-            Fruit(name = "Cherry", nutritions = Nutritions(sugar = 11f)),
+            FruitSchema(name = "Apple", nutritions = NutritionsSchema(sugar = 10f)),
+            FruitSchema(name = "Banana", nutritions = NutritionsSchema(sugar = 22f)),
+            FruitSchema(name = "Cherry", nutritions = NutritionsSchema(sugar = 11f)),
         ),
         assertion = {
             shouldHaveSize(3)
@@ -169,9 +169,9 @@ internal class FruitListViewModelTest {
     @Test
     fun `Filtering after sorting keeps the correct sorting`() {
         fakeFruitApi.fruits = listOf(
-            Fruit(name = "Apple", nutritions = Nutritions(carbohydrates = 3f)),
-            Fruit(name = "Banana", nutritions = Nutritions(carbohydrates = 1f)),
-            Fruit(name = "Cherry", nutritions = Nutritions(carbohydrates = 2f)),
+            FruitSchema(name = "Apple", nutritions = NutritionsSchema(carbohydrates = 3f)),
+            FruitSchema(name = "Banana", nutritions = NutritionsSchema(carbohydrates = 1f)),
+            FruitSchema(name = "Cherry", nutritions = NutritionsSchema(carbohydrates = 2f)),
         )
         systemUnderTest.initialize()
         systemUnderTest.sortByNutrition(FruitListViewModel.Sorting.CARBOHYDRATES)
@@ -188,9 +188,9 @@ internal class FruitListViewModelTest {
     @Test
     fun `Sorting after filtering keeps the correct filter`() {
         fakeFruitApi.fruits = listOf(
-            Fruit(name = "Apple", nutritions = Nutritions(carbohydrates = 3f)),
-            Fruit(name = "Banana", nutritions = Nutritions(carbohydrates = 1f)),
-            Fruit(name = "Cherry", nutritions = Nutritions(carbohydrates = 2f)),
+            FruitSchema(name = "Apple", nutritions = NutritionsSchema(carbohydrates = 3f)),
+            FruitSchema(name = "Banana", nutritions = NutritionsSchema(carbohydrates = 1f)),
+            FruitSchema(name = "Cherry", nutritions = NutritionsSchema(carbohydrates = 2f)),
         )
         systemUnderTest.initialize()
         systemUnderTest.filterByName("a")
@@ -207,9 +207,9 @@ internal class FruitListViewModelTest {
     @Test
     fun `Removing sorting brings back original sorting`() {
         fakeFruitApi.fruits = listOf(
-            Fruit(name = "Apple", nutritions = Nutritions(carbohydrates = 3f)),
-            Fruit(name = "Banana", nutritions = Nutritions(carbohydrates = 1f)),
-            Fruit(name = "Cherry", nutritions = Nutritions(carbohydrates = 2f)),
+            FruitSchema(name = "Apple", nutritions = NutritionsSchema(carbohydrates = 3f)),
+            FruitSchema(name = "Banana", nutritions = NutritionsSchema(carbohydrates = 1f)),
+            FruitSchema(name = "Cherry", nutritions = NutritionsSchema(carbohydrates = 2f)),
         )
         systemUnderTest.initialize()
         systemUnderTest.sortByNutrition(FruitListViewModel.Sorting.CARBOHYDRATES)
@@ -251,9 +251,9 @@ internal class FruitListViewModelTest {
     @Test
     fun `Favorite fruits are placed at the top when there is no sorting`() {
         fakeFruitApi.fruits = listOf(
-            Fruit(name = "Apple", id = 3),
-            Fruit(name = "Banana", id = 2),
-            Fruit(name = "Cherry", id = 1),
+            FruitSchema(name = "Apple", id = 3),
+            FruitSchema(name = "Banana", id = 2),
+            FruitSchema(name = "Cherry", id = 1),
         )
         systemUnderTest.initialize()
 
@@ -270,9 +270,9 @@ internal class FruitListViewModelTest {
     @Test
     fun `Favorite fruits dont change the activated sorting`() {
         fakeFruitApi.fruits = listOf(
-            Fruit(name = "Apple", id = 3),
-            Fruit(name = "Banana", id = 2),
-            Fruit(name = "Cherry", id = 1),
+            FruitSchema(name = "Apple", id = 3),
+            FruitSchema(name = "Banana", id = 2),
+            FruitSchema(name = "Cherry", id = 1),
         )
         systemUnderTest.initialize()
         systemUnderTest.sortByNutrition(FruitListViewModel.Sorting.CARBOHYDRATES)
@@ -289,8 +289,8 @@ internal class FruitListViewModelTest {
 
     private fun nutritionSortingTestCase(
         nutrition: FruitListViewModel.Sorting,
-        fruits: List<Fruit>,
-        assertion: List<Fruit>.() -> Unit
+        fruits: List<FruitSchema>,
+        assertion: List<FruitSchema>.() -> Unit
     ) {
         fakeFruitApi.fruits = fruits
         systemUnderTest.initialize()
@@ -308,7 +308,7 @@ internal class FruitListViewModelTest {
 
 class FakeFruitApi : FruitApi {
 
-    var fruits: List<Fruit> = emptyList()
+    var fruits: List<FruitSchema> = emptyList()
 
-    override suspend fun getFruits(): List<Fruit> = fruits
+    override suspend fun getFruits(): List<FruitSchema> = fruits
 }

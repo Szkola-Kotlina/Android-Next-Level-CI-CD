@@ -15,16 +15,14 @@ import kotlinx.serialization.json.Json
 
 
 @Serializable
-data class Fruit(
+data class FruitSchema(
     val name: String = "",
     val id: Int = -1,
-    val family: String = "", // TODO remove?
-    val order: String = "", // TODO remove?
-    val nutritions: Nutritions = Nutritions()
+    val nutritions: NutritionsSchema = NutritionsSchema()
 )
 
 @Serializable
-data class Nutritions(
+data class NutritionsSchema(
     val carbohydrates: Float = 0.0f,
     val protein: Float = 0.0f,
     val fat: Float = 0.0f,
@@ -34,7 +32,7 @@ data class Nutritions(
 
 interface FruitApi {
 
-    suspend fun getFruits(): List<Fruit>
+    suspend fun getFruits(): List<FruitSchema>
 }
 
 class KtorFruitApi : FruitApi {
@@ -60,7 +58,7 @@ class KtorFruitApi : FruitApi {
         }
     }
 
-    override suspend fun getFruits(): List<Fruit> =
+    override suspend fun getFruits(): List<FruitSchema> =
         try {
             val response = client.get("https://www.fruityvice.com/api/fruit/all")
             response.body()

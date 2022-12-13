@@ -19,11 +19,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,7 +54,7 @@ fun FruitListScreen(viewModel: FruitListViewModel) {
 
 @Composable
 private fun FruitListScreenContent(
-    fruits: List<Fruit>,
+    fruits: List<FruitSchema>,
     favorites: List<Int>,
     filterByName: (String) -> Unit,
     sortByNutrition: (FruitListViewModel.Sorting) -> Unit,
@@ -115,7 +113,7 @@ private fun TopActions(
 
 @Composable
 private fun FruitList(
-    fruits: List<Fruit>,
+    fruits: List<FruitSchema>,
     favorites: List<Int>,
     addToFavorite: (Int) -> Unit
 ) {
@@ -136,7 +134,7 @@ private fun FruitList(
 }
 
 @Composable
-private fun FruitItem(fruit: Fruit, isFavorited: Boolean, onFavoriteClick: () -> Unit) {
+private fun FruitItem(fruit: FruitSchema, isFavorited: Boolean, onFavoriteClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(4.dp),
         backgroundColor = Color(0xFFF0F0F0),

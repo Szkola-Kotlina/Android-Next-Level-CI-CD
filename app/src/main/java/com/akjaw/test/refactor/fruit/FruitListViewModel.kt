@@ -50,11 +50,11 @@ class FruitListViewModel(
         NO_SORTING,
     }
 
-    private val originalFruits: MutableStateFlow<List<Fruit>> = MutableStateFlow(emptyList())
+    private val originalFruits: MutableStateFlow<List<FruitSchema>> = MutableStateFlow(emptyList())
     private val currentSearchQuery: MutableStateFlow<String> = MutableStateFlow("")
     private val currentNutritionSort: MutableStateFlow<Sorting> = MutableStateFlow(Sorting.NO_SORTING)
     val favoriteFruitIds: StateFlow<List<Int>> = favoriteRepository.favoriteFruitIds
-    val fruits: StateFlow<List<Fruit>> =
+    val fruits: StateFlow<List<FruitSchema>> =
         combine(
             originalFruits,
             currentSearchQuery,
@@ -80,7 +80,7 @@ class FruitListViewModel(
     }
 
     private fun transform(
-        originalFruits: List<Fruit>,
+        originalFruits: List<FruitSchema>,
         currentSearchQuery: String,
         currentNutritionSort: Sorting,
         favorites: List<Int>
@@ -88,10 +88,10 @@ class FruitListViewModel(
         .filter { it.name.contains(currentSearchQuery, ignoreCase = true) }
         .sort(currentNutritionSort, favorites)
 
-    private fun List<Fruit>.sort(
+    private fun List<FruitSchema>.sort(
         sorting: Sorting,
         favorites: List<Int>
-    ): List<Fruit> = when (sorting) {
+    ): List<FruitSchema> = when (sorting) {
         Sorting.CARBOHYDRATES -> sortedBy { it.nutritions.carbohydrates }
         Sorting.PROTEIN -> sortedBy { it.nutritions.protein }
         Sorting.FAT -> sortedBy { it.nutritions.fat }
