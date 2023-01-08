@@ -18,8 +18,8 @@ import kotlinx.serialization.json.Json
 data class Fruit(
     val name: String = "",
     val id: Int = -1,
-    val family: String = "", // TODO remove?
-    val order: String = "", // TODO remove?
+    val family: String = "",
+    val order: String = "",
     val nutritions: Nutritions = Nutritions()
 )
 
