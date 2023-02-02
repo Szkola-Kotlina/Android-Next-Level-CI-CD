@@ -270,24 +270,24 @@ internal class FruitListViewModelTest {
     }
 
     @Test
-    fun `Adding a favorite fruit updates the favorite flag`() {
+    fun `Updating a favorite fruit the favorite flag`() {
         fakeFruitApi.fruits = listOf(FruitSchema(name = "Apple", id = 1))
         systemUnderTest.initialize()
 
-        systemUnderTest.addToFavorite(1)
+        systemUnderTest.updateFavorite(1)
 
         systemUnderTest.fruits.value.first().isFavorited shouldBe true
     }
 
     @Test
-    fun `Adding the same favorite fruit multiple times does change the favorite flag`() {
+    fun `Updating an existing favorite fruit removes the favorite list`() {
         fakeFruitApi.fruits = listOf(FruitSchema(name = "Apple", id = 1))
         systemUnderTest.initialize()
+        systemUnderTest.updateFavorite(1)
 
-        systemUnderTest.addToFavorite(1)
-        systemUnderTest.addToFavorite(1)
+        systemUnderTest.updateFavorite(1)
 
-        systemUnderTest.fruits.value.first().isFavorited shouldBe true
+        systemUnderTest.fruits.value.first().isFavorited shouldBe false
     }
 
     @Test
@@ -299,7 +299,7 @@ internal class FruitListViewModelTest {
         )
         systemUnderTest.initialize()
 
-        systemUnderTest.addToFavorite(1)
+        systemUnderTest.updateFavorite(1)
 
         assertSoftly(systemUnderTest.fruits.value) {
             shouldHaveSize(3)
@@ -319,7 +319,7 @@ internal class FruitListViewModelTest {
         systemUnderTest.initialize()
         systemUnderTest.sortByNutrition(FruitListViewModel.SortType.CARBOHYDRATES)
 
-        systemUnderTest.addToFavorite(1)
+        systemUnderTest.updateFavorite(1)
 
         assertSoftly(systemUnderTest.fruits.value) {
             shouldHaveSize(3)

@@ -1,6 +1,5 @@
 package com.akjaw.test.refactor.fruit
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,7 +49,7 @@ fun FruitListScreen(viewModel: FruitListViewModel) {
         fruits = fruits,
         filterByName = viewModel::filterByName,
         sortByNutrition = viewModel::sortByNutrition,
-        addToFavorite = viewModel::addToFavorite,
+        updateFavorite = viewModel::updateFavorite,
     )
 }
 
@@ -59,16 +58,22 @@ private fun FruitListScreenContent(
     fruits: List<Fruit>,
     filterByName: (String) -> Unit,
     sortByNutrition: (SortType) -> Unit,
-    addToFavorite: (Int) -> Unit
+    updateFavorite: (Int) -> Unit
 ) {
+    var currentSortType by remember { mutableStateOf(SortType.NO_SORTING) }
+    val shouldScrollToTop = remember(currentSortType) { currentSortType == SortType.NO_SORTING }
     Column(Modifier.fillMaxSize().padding(horizontal = 8.dp)) {
         TopActions(
             filterByName = filterByName,
-            sortByNutrition = sortByNutrition,
+            sortByNutrition = { newSortType ->
+                currentSortType = newSortType
+                sortByNutrition(newSortType)
+            },
         )
         FruitList(
-            fruits,
-            addToFavorite,
+            fruits = fruits,
+            updateFavorite = updateFavorite,
+            shouldScrollToTop = shouldScrollToTop
         )
     }
 }
@@ -146,19 +151,21 @@ private fun TopActions(
 @Composable
 private fun FruitList(
     fruits: List<Fruit>,
-    addToFavorite: (Int) -> Unit
+    updateFavorite: (Int) -> Unit,
+    shouldScrollToTop: Boolean,
 ) {
     val state = rememberLazyListState()
     LaunchedEffect(fruits) {
-        state.scrollToItem(0)
+        if (shouldScrollToTop) {
+            state.scrollToItem(0)
+        }
     }
     LazyColumn(Modifier.fillMaxHeight(), state = state) {
         items(items = fruits, key = { it.id }) { fruit ->
-            val isFavorited = remember(fruit) { fruit.isFavorited }
             FruitItem(
                 fruit = fruit,
-                isFavorited = isFavorited,
-                onFavoriteClick = { addToFavorite(fruit.id) }
+                isFavorited = fruit.isFavorited,
+                onFavoriteClick = { updateFavorite(fruit.id) }
             )
         }
     }
@@ -178,14 +185,18 @@ private fun FruitItem(fruit: Fruit, isFavorited: Boolean, onFavoriteClick: () ->
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(fruit.name, style = MaterialTheme.typography.h5)
-                if (isFavorited) {
-                    Icon(Icons.Filled.Star, "Favorited")
-                } else {
-                    Icon(
-                        imageVector = Icons.Filled.StarBorder,
-                        contentDescription = "Add to favorite",
-                        modifier = Modifier.clickable(onClick = onFavoriteClick)
-                    )
+                IconButton(onClick = onFavoriteClick) {
+                    if (isFavorited) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            contentDescription = "Favorited"
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Filled.StarBorder,
+                            contentDescription = "Add to favorite",
+                        )
+                    }
                 }
             }
             NutritionRow {

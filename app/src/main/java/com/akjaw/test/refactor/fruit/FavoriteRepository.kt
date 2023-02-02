@@ -8,8 +8,11 @@ class FavoriteRepository {
     private val mutableFavoriteFruitIds: MutableStateFlow<List<Int>> = MutableStateFlow(emptyList<Int>())
     val favoriteFruitIds: StateFlow<List<Int>> = mutableFavoriteFruitIds
 
-    fun addToFavorite(fruitId: Int) {
-        if (mutableFavoriteFruitIds.value.contains(fruitId)) return
-        mutableFavoriteFruitIds.value = mutableFavoriteFruitIds.value + fruitId
+    fun updateFavorite(fruitId: Int) {
+        mutableFavoriteFruitIds.value = if (favoriteFruitIds.value.contains(fruitId)) {
+            favoriteFruitIds.value.filter { it != fruitId }
+        } else {
+            favoriteFruitIds.value + fruitId
+        }
     }
 }
