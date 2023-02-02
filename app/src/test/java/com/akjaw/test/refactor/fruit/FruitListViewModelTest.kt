@@ -123,7 +123,7 @@ internal class FruitListViewModelTest {
 
     @Test
     fun `Sorting by CARBOHYDRATES updates the state correctly`() = nutritionSortingTestCase(
-        nutrition = FruitListViewModel.Sorting.CARBOHYDRATES,
+        nutrition = FruitListViewModel.SortType.CARBOHYDRATES,
         fruits = listOf(
             FruitSchema(name = "Apple", nutritions = NutritionsSchema(carbohydrates = 10f)),
             FruitSchema(name = "Banana", nutritions = NutritionsSchema(carbohydrates = 22f)),
@@ -139,7 +139,7 @@ internal class FruitListViewModelTest {
 
     @Test
     fun `Sorting by PROTEIN updates the state correctly`() = nutritionSortingTestCase(
-        nutrition = FruitListViewModel.Sorting.PROTEIN,
+        nutrition = FruitListViewModel.SortType.PROTEIN,
         fruits = listOf(
             FruitSchema(name = "Apple", nutritions = NutritionsSchema(protein = 10f)),
             FruitSchema(name = "Banana", nutritions = NutritionsSchema(protein = 22f)),
@@ -155,7 +155,7 @@ internal class FruitListViewModelTest {
 
     @Test
     fun `Sorting by FAT updates the state correctly`() = nutritionSortingTestCase(
-        nutrition = FruitListViewModel.Sorting.FAT,
+        nutrition = FruitListViewModel.SortType.FAT,
         fruits = listOf(
             FruitSchema(name = "Apple", nutritions = NutritionsSchema(fat = 10f)),
             FruitSchema(name = "Banana", nutritions = NutritionsSchema(fat = 22f)),
@@ -171,7 +171,7 @@ internal class FruitListViewModelTest {
 
     @Test
     fun `Sorting by CALORIES updates the state correctly`() = nutritionSortingTestCase(
-        nutrition = FruitListViewModel.Sorting.CALORIES,
+        nutrition = FruitListViewModel.SortType.CALORIES,
         fruits = listOf(
             FruitSchema(name = "Apple", nutritions = NutritionsSchema(calories = 10f)),
             FruitSchema(name = "Banana", nutritions = NutritionsSchema(calories = 22f)),
@@ -187,7 +187,7 @@ internal class FruitListViewModelTest {
 
     @Test
     fun `Sorting by SUGAR updates the state correctly`() = nutritionSortingTestCase(
-        nutrition = FruitListViewModel.Sorting.SUGAR,
+        nutrition = FruitListViewModel.SortType.SUGAR,
         fruits = listOf(
             FruitSchema(name = "Apple", nutritions = NutritionsSchema(sugar = 10f)),
             FruitSchema(name = "Banana", nutritions = NutritionsSchema(sugar = 22f)),
@@ -209,7 +209,7 @@ internal class FruitListViewModelTest {
             FruitSchema(name = "Cherry", nutritions = NutritionsSchema(carbohydrates = 2f)),
         )
         systemUnderTest.initialize()
-        systemUnderTest.sortByNutrition(FruitListViewModel.Sorting.CARBOHYDRATES)
+        systemUnderTest.sortByNutrition(FruitListViewModel.SortType.CARBOHYDRATES)
 
         systemUnderTest.filterByName("a")
 
@@ -230,7 +230,7 @@ internal class FruitListViewModelTest {
         systemUnderTest.initialize()
         systemUnderTest.filterByName("a")
 
-        systemUnderTest.sortByNutrition(FruitListViewModel.Sorting.CARBOHYDRATES)
+        systemUnderTest.sortByNutrition(FruitListViewModel.SortType.CARBOHYDRATES)
 
         assertSoftly(systemUnderTest.fruits.value) {
             shouldHaveSize(2)
@@ -247,11 +247,11 @@ internal class FruitListViewModelTest {
             FruitSchema(name = "Cherry", nutritions = NutritionsSchema(carbohydrates = 2f)),
         )
         systemUnderTest.initialize()
-        systemUnderTest.sortByNutrition(FruitListViewModel.Sorting.CARBOHYDRATES)
+        systemUnderTest.sortByNutrition(FruitListViewModel.SortType.CARBOHYDRATES)
 
-        systemUnderTest.sortByNutrition(FruitListViewModel.Sorting.NO_SORTING)
-        systemUnderTest.sortByNutrition(FruitListViewModel.Sorting.NO_SORTING)
-        systemUnderTest.sortByNutrition(FruitListViewModel.Sorting.NO_SORTING)
+        systemUnderTest.sortByNutrition(FruitListViewModel.SortType.NO_SORTING)
+        systemUnderTest.sortByNutrition(FruitListViewModel.SortType.NO_SORTING)
+        systemUnderTest.sortByNutrition(FruitListViewModel.SortType.NO_SORTING)
 
         assertSoftly(systemUnderTest.fruits.value) {
             shouldHaveSize(3)
@@ -317,7 +317,7 @@ internal class FruitListViewModelTest {
             FruitSchema(name = "Cherry", id = 1),
         )
         systemUnderTest.initialize()
-        systemUnderTest.sortByNutrition(FruitListViewModel.Sorting.CARBOHYDRATES)
+        systemUnderTest.sortByNutrition(FruitListViewModel.SortType.CARBOHYDRATES)
 
         systemUnderTest.addToFavorite(1)
 
@@ -330,7 +330,7 @@ internal class FruitListViewModelTest {
     }
 
     private fun nutritionSortingTestCase(
-        nutrition: FruitListViewModel.Sorting,
+        nutrition: FruitListViewModel.SortType,
         fruits: List<FruitSchema>,
         assertion: List<Fruit>.() -> Unit
     ) {

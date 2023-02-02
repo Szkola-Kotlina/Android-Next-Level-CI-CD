@@ -14,10 +14,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Card
 import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material.icons.filled.Star
@@ -33,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.akjaw.test.refactor.fruit.FruitListViewModel.SortType
 import com.akjaw.test.refactor.fruit.model.Fruit
 
 @Composable
@@ -55,10 +58,10 @@ fun FruitListScreen(viewModel: FruitListViewModel) {
 private fun FruitListScreenContent(
     fruits: List<Fruit>,
     filterByName: (String) -> Unit,
-    sortByNutrition: (FruitListViewModel.Sorting) -> Unit,
+    sortByNutrition: (SortType) -> Unit,
     addToFavorite: (Int) -> Unit
 ) {
-    Column(Modifier.fillMaxSize()) {
+    Column(Modifier.fillMaxSize().padding(horizontal = 8.dp)) {
         TopActions(
             filterByName = filterByName,
             sortByNutrition = sortByNutrition,
@@ -73,35 +76,67 @@ private fun FruitListScreenContent(
 @Composable
 private fun TopActions(
     filterByName: (String) -> Unit,
-    sortByNutrition: (FruitListViewModel.Sorting) -> Unit,
+    sortByNutrition: (SortType) -> Unit,
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var isDropDownShown by remember { mutableStateOf(false) }
 
-    Row(modifier = Modifier.fillMaxWidth()) {
-        TextField(
-            modifier = Modifier,
-            value = searchQuery,
-            onValueChange = { newValue ->
-                searchQuery = newValue
-                filterByName(newValue)
-            },
-            label = { Text("Name") }
-        )
-        Box {
-            Icon(
-                imageVector = Icons.Filled.Sort,
-                contentDescription = "Sort",
-                modifier = Modifier.clickable { isDropDownShown = true }
+    Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(bottom = 8.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OutlinedTextField(
+                modifier = Modifier.weight(1f),
+                value = searchQuery,
+                onValueChange = { newValue ->
+                    searchQuery = newValue
+                    filterByName(newValue)
+                },
+                label = { Text("Search for fruit") }
             )
-            DropdownMenu(expanded = isDropDownShown, onDismissRequest = { isDropDownShown = false }) {
+            IconButton(
+                onClick = { isDropDownShown = true },
+                modifier = Modifier.padding(top = 4.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Sort,
+                    contentDescription = "Sort",
+                    modifier = Modifier
+                )
+            }
+        }
+        Box(contentAlignment = Alignment.TopEnd) {
+            DropdownMenu(
+                expanded = isDropDownShown,
+                onDismissRequest = { isDropDownShown = false },
+            ) {
+                val onClick: (SortType) -> Unit = remember {
+                    { sortType ->
+                        isDropDownShown = false
+                        sortByNutrition(sortType)
+                    }
+                }
                 Column {
-                    Text("No sorting", Modifier.clickable { sortByNutrition(FruitListViewModel.Sorting.NO_SORTING) })
-                    Text("Carbohydrates", Modifier.clickable { sortByNutrition(FruitListViewModel.Sorting.CARBOHYDRATES) })
-                    Text("Protein", Modifier.clickable { sortByNutrition(FruitListViewModel.Sorting.PROTEIN) })
-                    Text("Fat", Modifier.clickable { sortByNutrition(FruitListViewModel.Sorting.FAT) })
-                    Text("Calories", Modifier.clickable { sortByNutrition(FruitListViewModel.Sorting.CALORIES) })
-                    Text("Sugar", Modifier.clickable { sortByNutrition(FruitListViewModel.Sorting.SUGAR) })
+                    DropdownMenuItem(onClick = { onClick(SortType.NO_SORTING) }) {
+                        Text("No sorting")
+                    }
+                    DropdownMenuItem(onClick = { onClick(SortType.CARBOHYDRATES) }) {
+                        Text("Carbohydrates")
+                    }
+                    DropdownMenuItem(onClick = { onClick(SortType.PROTEIN) }) {
+                        Text("Protein")
+                    }
+                    DropdownMenuItem(onClick = { onClick(SortType.FAT) }) {
+                        Text("Fat")
+                    }
+                    DropdownMenuItem(onClick = { onClick(SortType.CALORIES) }) {
+                        Text("Calories")
+                    }
+                    DropdownMenuItem(onClick = { onClick(SortType.SUGAR) }) {
+                        Text("Sugar")
+                    }
                 }
             }
         }
@@ -133,7 +168,8 @@ private fun FruitList(
 private fun FruitItem(fruit: Fruit, isFavorited: Boolean, onFavoriteClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(4.dp),
-        backgroundColor = Color(0xFFF0F0F0),
+        backgroundColor = Color(0xFFe0f0f6),
+        elevation = 4.dp,
     ) {
         Column(Modifier.padding(8.dp)) {
             Row(
