@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id "org.jetbrains.kotlin.plugin.serialization"
     id 'com.google.gms.google-services'
+    id 'com.google.firebase.appdistribution'
 }
 
 android {
@@ -22,9 +23,25 @@ android {
     }
 
     buildTypes {
+        debug {
+            var credentials = file("$rootDir/app/appDistribution/serviceAccountKey.json")
+            firebaseAppDistribution {
+                artifactType = "APK"
+                releaseNotes = System.getenv("BUILD_DESCRIPTION")
+                groups = System.getenv("FIREBASE_TESTERS_GROUPS")
+                serviceCredentialsFile = credentials.path
+            }
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            var credentials = file("$rootDir/app/appDistribution/serviceAccountKey.json")
+            firebaseAppDistribution {
+                artifactType = "APK"
+                releaseNotes = System.getenv("BUILD_DESCRIPTION")
+                groups = System.getenv("FIREBASE_TESTERS_GROUPS")
+                serviceCredentialsFile = credentials.path
+            }
         }
     }
     compileOptions {

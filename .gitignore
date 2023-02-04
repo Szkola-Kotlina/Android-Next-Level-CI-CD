@@ -306,3 +306,4 @@ obj/
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/android,androidstudio,kotlin,intellij
+/app/appDistribution/serviceAccountKey.json
