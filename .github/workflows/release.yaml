@@ -1,0 +1,83 @@
+name: Release App Build
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version name"
+        required: true
+        default: "major.minor.patch"
+      candidate:
+        description: "Release candidate version"
+        required: true
+        default: "1"
+      description:
+        description: "App distribution description"
+        default: ""
+      groups:
+        description: "Firebase tester groups"
+        required: true
+        default: "testers"
+jobs:
+  Apk:
+    name: Create and upload APK artifact and publish to App Tester
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Firebase secrets
+        uses: ./.github/actions/firebase_secrets
+        with:
+          GOOGLE_SERVICES_JSON: "${{ secrets.GOOGLE_SERVICES_JSON }}"
+          GOOGLE_APPLICATION_CREDENTIALS: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+
+      - run: ./gradlew app:assembleRelease
+
+      - name: Upload apk artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: "FruitCatalog_${{ github.event.inputs.version }}_RC${{ github.event.inputs.candidate }}"
+          path: "./app/build/outputs/apk/**/**/*.apk"
+          if-no-files-found: error
+
+      - name: Upload apk to app distribution
+        run: |
+          export BUILD_DESCRIPTION="${{ github.event.inputs.description }}"
+          export FIREBASE_TESTERS_GROUPS="${{ github.event.inputs.groups }}"
+          ./gradlew app:appDistributionUploadRelease
+
+      - name: Create tag
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/release/v${{ github.event.inputs.version }}-RC${{ github.event.inputs.candidate }}",
+              sha: context.sha
+            })
+
+  Aab:
+    name: Create and upload AAB
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Firebase secrets
+        uses: ./.github/actions/firebase_secrets
+        with:
+          GOOGLE_SERVICES_JSON: "${{ secrets.GOOGLE_SERVICES_JSON }}"
+          GOOGLE_APPLICATION_CREDENTIALS: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+
+      - run: ./gradlew app:bundleRelease
+
+      - name: Upload aab artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: "FruitCatalog_${{ github.event.inputs.version }}_RC${{ github.event.inputs.candidate }}"
+          path: "./app/build/outputs/bundle/**/**/*.aab"
+          if-no-files-found: error
+
