@@ -11,7 +11,7 @@ runs:
   using: "composite"
   steps:
     - name: Create file
-      run: echo "${{ inputs.GOOGLE_SERVICES_JSON }}" | base64 --decode > ./app/google-services.json && cat ./app/google-services.json
+      run: echo "${{ inputs.GOOGLE_SERVICES_JSON }}" | base64 --decode > ./app/google-services.json
       shell: bash
 
     - name: Create file
