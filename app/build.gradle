@@ -24,7 +24,7 @@ android {
 
     buildTypes {
         debug {
-            var credentials = file("$rootDir/app/appDistribution/serviceAccountKey.json")
+            var credentials = file("$rootDir/app/serviceAccountKey.json")
             firebaseAppDistribution {
                 artifactType = "APK"
                 releaseNotes = System.getenv("BUILD_DESCRIPTION")
@@ -35,7 +35,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            var credentials = file("$rootDir/app/appDistribution/serviceAccountKey.json")
+            var credentials = file("$rootDir/app/serviceAccountKey.json")
             firebaseAppDistribution {
                 artifactType = "APK"
                 releaseNotes = System.getenv("BUILD_DESCRIPTION")
