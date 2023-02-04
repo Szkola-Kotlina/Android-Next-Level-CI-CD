@@ -1,10 +1,10 @@
-package com.akjaw.test.refactor.fruit
+package com.akjaw.android.next.level.cicd.fruit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.akjaw.test.refactor.fruit.model.Fruit
-import com.akjaw.test.refactor.fruit.model.Nutritions
+import com.akjaw.android.next.level.cicd.fruit.model.Fruit
+import com.akjaw.android.next.level.cicd.fruit.model.Nutritions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
