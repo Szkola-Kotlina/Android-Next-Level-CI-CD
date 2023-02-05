@@ -1,7 +1,7 @@
-package com.akjaw.test.refactor.fruit
+package com.akjaw.android.next.level.cicd.fruit
 
-import com.akjaw.test.refactor.fruit.model.Fruit
-import com.akjaw.test.refactor.fruit.model.Nutritions
+import com.akjaw.android.next.level.cicd.fruit.model.Fruit
+import com.akjaw.android.next.level.cicd.fruit.model.Nutritions
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe

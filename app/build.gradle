@@ -2,17 +2,19 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id "org.jetbrains.kotlin.plugin.serialization"
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.appdistribution'
 }
 
 android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.akjaw.test.refactor"
+        applicationId "com.akjaw.android.next.level.cicd"
         minSdk 21
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        versionCode 1000
+        versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -21,9 +23,25 @@ android {
     }
 
     buildTypes {
+        debug {
+            var credentials = file("$rootDir/app/serviceAccountKey.json")
+            firebaseAppDistribution {
+                artifactType = "APK"
+                releaseNotes = System.getenv("BUILD_DESCRIPTION")
+                groups = System.getenv("FIREBASE_TESTERS_GROUPS")
+                serviceCredentialsFile = credentials.path
+            }
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            var credentials = file("$rootDir/app/serviceAccountKey.json")
+            firebaseAppDistribution {
+                artifactType = "APK"
+                releaseNotes = System.getenv("BUILD_DESCRIPTION")
+                groups = System.getenv("FIREBASE_TESTERS_GROUPS")
+                serviceCredentialsFile = credentials.path
+            }
         }
     }
     compileOptions {
@@ -61,6 +79,7 @@ dependencies {
     implementation("io.ktor:ktor-client-logging:2.1.3")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.1.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation platform('com.google.firebase:firebase-bom:31.2.0')
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'app.cash.turbine:turbine:0.12.1'
     testImplementation 'io.kotest:kotest-assertions-core:5.5.4'

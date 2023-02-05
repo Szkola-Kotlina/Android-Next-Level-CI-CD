@@ -1,0 +1,19 @@
+name: Create Secret files for Firebase
+description: Allows GHA to use use firebase
+inputs:
+  GOOGLE_SERVICES_JSON:
+    description: The Google services json
+    required: true
+  GOOGLE_APPLICATION_CREDENTIALS:
+    description: The Service account json
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Create file
+      run: echo "${{ inputs.GOOGLE_SERVICES_JSON }}" | base64 --decode > ./app/google-services.json
+      shell: bash
+
+    - name: Create file
+      run: echo "${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}" | base64 --decode > ./app/serviceAccountKey.json
+      shell: bash

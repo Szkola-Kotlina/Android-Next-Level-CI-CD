@@ -6,7 +6,7 @@ on:
     branches:
       - main
   pull_request:
-    types: [opened, ready_for_review]
+    types: [opened, ready_for_review, synchronize]
     branches:
       - main
 
@@ -22,6 +22,12 @@ jobs:
           access_token: ${{ github.token }}
 
       - uses: actions/checkout@v2
+
+      - name: Firebase secrets
+        uses: ./.github/actions/firebase_secrets
+        with:
+          GOOGLE_SERVICES_JSON: "${{ secrets.GOOGLE_SERVICES_JSON }}"
+          GOOGLE_APPLICATION_CREDENTIALS: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
 
       - uses: actions/setup-java@v2
         with:

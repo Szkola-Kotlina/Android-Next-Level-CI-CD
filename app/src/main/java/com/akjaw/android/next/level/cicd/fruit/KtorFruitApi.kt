@@ -1,4 +1,4 @@
-package com.akjaw.test.refactor.fruit
+package com.akjaw.android.next.level.cicd.fruit
 
 import android.util.Log
 import io.ktor.client.HttpClient
