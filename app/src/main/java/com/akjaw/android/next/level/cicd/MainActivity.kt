@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.akjaw.android.next.level.cicd.fruit.FruitListScreen
 import com.akjaw.android.next.level.cicd.fruit.FruitListViewModel
 import com.akjaw.android.next.level.cicd.fruit.FruitListViewModelFactory
-import com.akjaw.android.next.level.cicd.ui.theme.TestRefactorTheme
+import com.akjaw.android.next.level.cicd.ui.theme.FruitTheme
 
 // Either ViewModel crammed with everything  -> refactored to have better separation
 // Having a logically dense class -> refactoring its internal logic but the surface API is the same
@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            TestRefactorTheme {
+            FruitTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
                     FruitListScreen(fruitListViewModel)
                 }
@@ -42,7 +42,7 @@ fun Greeting(name: String) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    TestRefactorTheme {
+    FruitTheme {
         Greeting("Android")
     }
 }
