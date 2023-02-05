@@ -1,4 +1,4 @@
-name: Build
+name: Code review
 
 on:
   workflow_dispatch:
@@ -94,6 +94,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 28
+          profile: Nexus 6
           script: adb logcat > logs.txt & ./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.annotation=com.akjaw.android.next.level.cicd.fruit.SmokeTest
 
       - name: Upload log output

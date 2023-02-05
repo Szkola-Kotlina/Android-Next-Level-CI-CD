@@ -1,4 +1,4 @@
-name: Nightly
+name: Weekly
 
 on:
   workflow_dispatch:
