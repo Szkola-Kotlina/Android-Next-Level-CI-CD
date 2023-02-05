@@ -1,23 +1,12 @@
-name: Manual distribution
+name: Nightly
 
 on:
   workflow_dispatch:
-    inputs:
-      variant:
-        description: "Variant (Debug, Release)"
-        required: true
-        default: "Debug"
-      groups:
-        description: "Firebase tester groups, should be separated with a comma"
-        required: true
-        default: "testers"
-      description:
-        description: "App distribution description"
-        required: false
-        default: ""
+  schedule:
+    - cron: '00 7 * * 1'
 
 jobs:
-  Manual:
+  DebugBuild:
     runs-on: ubuntu-latest
 
     steps:
@@ -39,6 +28,6 @@ jobs:
 
       - name: Upload apk to Firebase App Distribution
         run: |
-          export BUILD_DESCRIPTION="${{ github.event.inputs.description }}"
-          export FIREBASE_TESTERS_GROUPS="${{ github.event.inputs.groups }}"
-          ./gradlew app:appDistributionUpload${{ github.event.inputs.variant }}
+          export BUILD_DESCRIPTION="Weekly Debug build"
+          export FIREBASE_TESTERS_GROUPS="testers"
+          ./gradlew app:appDistributionUploadDebug
