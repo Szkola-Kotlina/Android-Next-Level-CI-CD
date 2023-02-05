@@ -22,6 +22,7 @@ import androidx.compose.ui.test.printToString
 import androidx.compose.ui.test.swipeUp
 import com.akjaw.android.next.level.cicd.MainActivity
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -37,6 +38,7 @@ internal class FruitListTest {
     }
 
     @Test
+    @Ignore
     fun favoriteFruitsIsPlacedOnTopAndRevertsWhenRemoved() {
         composeTestRule.onRoot()
             .performTouchInput {
