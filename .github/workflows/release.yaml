@@ -55,7 +55,7 @@ jobs:
             github.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: "refs/tags/release/v${{ github.event.inputs.version }}-RC${{ github.event.inputs.candidate }}",
+              ref: "refs/tags/release/FruitCatalog/v${{ github.event.inputs.version }}-RC${{ github.event.inputs.candidate }}",
               sha: context.sha
             })
 
