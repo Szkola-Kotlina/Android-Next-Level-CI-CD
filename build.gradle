@@ -26,6 +26,7 @@ task clean(type: Delete) {
 allprojects {
     tasks.withType(Test) {
         testLogging {
+            // passed can be remove to reduce clutter
             events("standardOut", "started", "passed", "skipped", "failed")
             exceptionFormat TestExceptionFormat.FULL
         }
