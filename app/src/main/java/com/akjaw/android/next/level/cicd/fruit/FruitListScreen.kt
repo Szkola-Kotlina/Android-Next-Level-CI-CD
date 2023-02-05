@@ -61,7 +61,6 @@ private fun FruitListScreenContent(
     updateFavorite: (Int) -> Unit
 ) {
     var currentSortType by remember { mutableStateOf(SortType.NO_SORTING) }
-    val shouldScrollToTop = remember(currentSortType) { currentSortType == SortType.NO_SORTING }
     Column(Modifier.fillMaxSize().padding(horizontal = 8.dp)) {
         TopActions(
             filterByName = filterByName,
@@ -73,7 +72,6 @@ private fun FruitListScreenContent(
         FruitList(
             fruits = fruits,
             updateFavorite = updateFavorite,
-            shouldScrollToTop = shouldScrollToTop
         )
     }
 }
@@ -152,11 +150,10 @@ private fun TopActions(
 private fun FruitList(
     fruits: List<Fruit>,
     updateFavorite: (Int) -> Unit,
-    shouldScrollToTop: Boolean,
 ) {
     val state = rememberLazyListState()
     LaunchedEffect(fruits) {
-        if (shouldScrollToTop) {
+        if (fruits.isNotEmpty()) {
             state.scrollToItem(0)
         }
     }
@@ -189,7 +186,7 @@ private fun FruitItem(fruit: Fruit, isFavorited: Boolean, onFavoriteClick: () ->
                     if (isFavorited) {
                         Icon(
                             imageVector = Icons.Filled.Star,
-                            contentDescription = "Favorited"
+                            contentDescription = "Remove from favorite"
                         )
                     } else {
                         Icon(

@@ -75,9 +75,23 @@ class KtorFruitApi : FruitApi {
         }
 }
 
-class FakeFruitApi : FruitApi {
+class FakeFruitApi(var fruits: List<FruitSchema> = emptyList()) : FruitApi {
 
-    var fruits: List<FruitSchema> = emptyList()
+    companion object {
+        val FRUITS = listOf(
+            FruitSchema(name="Apple", id=6, nutritions=NutritionsSchema(carbohydrates=11.4f, protein=0.3f, fat=0.4f, calories=52.0f, sugar=10.3f)),
+            FruitSchema(name="Apricot", id=35, nutritions=NutritionsSchema(carbohydrates=3.9f, protein=0.5f, fat=0.1f, calories=15.0f, sugar=3.2f)),
+            FruitSchema(name="Avocado", id=84, nutritions=NutritionsSchema(carbohydrates=8.53f, protein=2.0f, fat=14.66f, calories=160.0f, sugar=0.66f)),
+            FruitSchema(name="Banana", id=1, nutritions=NutritionsSchema(carbohydrates=22.0f, protein=1.0f, fat=0.2f, calories=96.0f, sugar=17.2f)),
+            FruitSchema(name="Blackberry", id=64, nutritions=NutritionsSchema(carbohydrates=9.0f, protein=1.3f, fat=0.4f, calories=40.0f, sugar=4.5f)),
+            FruitSchema(name="Blueberry", id=33, nutritions=NutritionsSchema(carbohydrates=5.5f, protein=0.0f, fat=0.4f, calories=29.0f, sugar=5.4f)),
+            FruitSchema(name="Cherry", id=9, nutritions=NutritionsSchema(carbohydrates=12.0f, protein=1.0f, fat=0.3f, calories=50.0f, sugar=8.0f)),
+            FruitSchema(name="Cranberry", id=87, nutritions=NutritionsSchema(carbohydrates=12.2f, protein=0.4f, fat=0.1f, calories=46.0f, sugar=4.0f)),
+            FruitSchema(name="Dragonfruit", id=80, nutritions=NutritionsSchema(carbohydrates=9.0f, protein=9.0f, fat=1.5f, calories=60.0f, sugar=8.0f)),
+            FruitSchema(name="Durian", id=60, nutritions=NutritionsSchema(carbohydrates=27.1f, protein=1.5f, fat=5.3f, calories=147.0f, sugar=6.75f)),
+        )
+    }
 
     override suspend fun getFruits(): List<FruitSchema> = fruits
 }
+
