@@ -10,7 +10,7 @@ class FavoriteRepository {
 
     fun updateFavorite(fruitId: Int) {
         mutableFavoriteFruitIds.value = if (favoriteFruitIds.value.contains(fruitId)) {
-            favoriteFruitIds.value.filter { it != fruitId }
+            favoriteFruitIds.value.filter { it == fruitId }
         } else {
             favoriteFruitIds.value + fruitId
         }
