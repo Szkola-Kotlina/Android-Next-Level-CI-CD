@@ -343,14 +343,4 @@ internal class FruitListViewModelTest {
             assertion(systemUnderTest.fruits.value)
         }
     }
-
-    // TODO split test class into multiple classes?
-    // TODO Other test some kind of selection tracker? where we can more easily extract logic classes?
-}
-
-class FakeFruitApi : FruitApi {
-
-    var fruits: List<FruitSchema> = emptyList()
-
-    override suspend fun getFruits(): List<FruitSchema> = fruits
 }
