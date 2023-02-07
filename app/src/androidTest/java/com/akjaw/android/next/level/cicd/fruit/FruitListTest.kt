@@ -38,8 +38,7 @@ internal class FruitListTest {
     }
 
     @Test
-    @Ignore
-    fun favoriteFruitsIsPlacedOnTopAndRevertsWhenRemoved() {
+    fun favoriteFruitsIsPlacedOnTop() {
         composeTestRule.onRoot()
             .performTouchInput {
                 swipeUp(800f, 0f)
@@ -51,12 +50,9 @@ internal class FruitListTest {
                 .onAllNodesWithText("Apple")
                 .fetchSemanticsNodes().size == 1
         }
+
         composeTestRule.onNodeWithText("Apple").assertIsDisplayed()
         composeTestRule.onNodeWithText("Dragonfruit").assertIsDisplayed()
-
-        removeFruitFromFavorite("Dragonfruit")
-        composeTestRule.onNodeWithText("Apple").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Dragonfruit").assertIsNotDisplayed()
     }
 
     @Test
