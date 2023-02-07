@@ -19,6 +19,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.printToString
+import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeUp
 import com.akjaw.android.next.level.cicd.MainActivity
 import org.junit.Before
@@ -45,6 +46,12 @@ internal class FruitListTest {
             }
 
         addFruitToFavorite("Dragonfruit")
+        composeTestRule.onRoot()
+            .performTouchInput {
+                swipeDown(200f, 900f)
+                swipeDown(200f, 900f)
+            }
+
         composeTestRule.waitUntil {
             composeTestRule
                 .onAllNodesWithText("Apple")
