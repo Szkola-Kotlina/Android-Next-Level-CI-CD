@@ -55,12 +55,11 @@ jobs:
           arguments: clean testDebug -p ./
 
   AllUiTests:
-    - uses: actions/checkout@v2
-      with:
-        ref: broken-nightly
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: broken-nightly
 
       - name: Firebase secrets
         uses: ./.github/actions/firebase_secrets
