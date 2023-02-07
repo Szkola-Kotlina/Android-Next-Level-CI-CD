@@ -172,7 +172,7 @@ private fun FruitList(
 private fun FruitItem(fruit: Fruit, isFavorited: Boolean, onFavoriteClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(4.dp),
-        backgroundColor = Color(0xFFe0f0f6),
+        backgroundColor = Color(0xFFd3eaf2),
         elevation = 4.dp,
     ) {
         Column(Modifier.padding(8.dp)) {
