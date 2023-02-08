@@ -128,7 +128,7 @@ private fun TopActions(
                     DropdownMenuItem(onClick = { onClick(SortType.CARBOHYDRATES) }) {
                         Text("Carbohydrates")
                     }
-                    DropdownMenuItem(onClick = { onClick(SortType.PROTEIN) }) {
+                    DropdownMenuItem(onClick = { onClick(SortType.FAT) }) {
                         Text("Protein")
                     }
                     DropdownMenuItem(onClick = { onClick(SortType.FAT) }) {
