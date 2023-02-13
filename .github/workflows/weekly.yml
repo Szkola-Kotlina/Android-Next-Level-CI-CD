@@ -23,8 +23,8 @@ jobs:
           distribution: "adopt"
           java-version: "11"
 
-      - name: "Build ${{ github.event.inputs.variant }} for: ${{ github.event.inputs.groups }}"
-        run: ./gradlew app:assemble${{ github.event.inputs.variant }}
+      - name: "Weekly debug build"
+        run: ./gradlew app:assembleDebug
 
       - name: Upload apk to Firebase App Distribution
         run: |
