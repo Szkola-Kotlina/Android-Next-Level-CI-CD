@@ -1,0 +1,16 @@
+name: Code review with reusable
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, ready_for_review, synchronize]
+    branches:
+      - main
+
+jobs:
+  Build:
+    uses: ./.github/workflows/reusable_build.yml
+    secrets: inherit
