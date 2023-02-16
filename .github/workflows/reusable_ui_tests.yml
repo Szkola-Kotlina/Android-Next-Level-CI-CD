@@ -31,12 +31,12 @@ jobs:
           distribution: "adopt"
           java-version: "11"
 
-      - name: "UI tests with param ${{ github.event.inputs.android_test_param }}"
+      - name: "UI tests with param ${{ inputs.android_test_param }}"
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 28
           profile: Nexus 6
-          script: adb logcat > logs.txt & ./gradlew connectedAndroidTest ${{ github.event.inputs.android_test_param }}
+          script: adb logcat > logs.txt & ./gradlew connectedAndroidTest ${{ inputs.android_test_param }}
 
       - name: Upload log output
         if: always()
