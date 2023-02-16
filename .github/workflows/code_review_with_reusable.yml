@@ -14,3 +14,13 @@ jobs:
   Build:
     uses: ./.github/workflows/reusable_build.yml
     secrets: inherit
+
+  UnitTests:
+    uses: ./.github/workflows/reusable_unit_tests.yml
+    secrets: inherit
+
+  SmokeUiTests:
+    uses: ./.github/workflows/reusable_unit_tests.yml
+    secrets: inherit
+    with:
+      android_test_param: "-Pandroid.testInstrumentationRunnerArguments.annotation=com.akjaw.android.next.level.cicd.fruit.SmokeTest"

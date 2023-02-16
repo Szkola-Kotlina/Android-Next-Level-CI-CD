@@ -1,0 +1,47 @@
+name: Reusable build
+
+on:
+  workflow_call:
+    inputs:
+      android_test_param:
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  UiTests:
+    runs-on: macos-12
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v2
+
+      - name: Firebase secrets
+        uses: ./.github/actions/firebase_secrets
+        with:
+          GOOGLE_SERVICES_JSON: "${{ secrets.GOOGLE_SERVICES_JSON }}"
+          GOOGLE_APPLICATION_CREDENTIALS: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - name: "UI tests with param ${{ github.event.inputs.android_test_param }}"
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 28
+          profile: Nexus 6
+          script: adb logcat > logs.txt & ./gradlew connectedAndroidTest ${{ github.event.inputs.android_test_param }}
+
+      - name: Upload log output
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: "log_output"
+          path: "logs.txt"
+          if-no-files-found: ignore
