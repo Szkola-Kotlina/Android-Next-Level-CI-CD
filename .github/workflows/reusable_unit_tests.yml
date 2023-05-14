@@ -1,0 +1,32 @@
+name: Reusable unit tests
+
+on:
+  workflow_call:
+
+jobs:
+  UnitTests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v3
+
+      - name: Firebase secrets
+        uses: ./.github/actions/firebase_secrets
+        with:
+          GOOGLE_SERVICES_JSON: "${{ secrets.GOOGLE_SERVICES_JSON }}"
+          GOOGLE_APPLICATION_CREDENTIALS: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - uses: burrunan/gradle-cache-action@v1
+        name: Test
+        with:
+          arguments: clean testDebug -p ./

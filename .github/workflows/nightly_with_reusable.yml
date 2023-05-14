@@ -1,0 +1,19 @@
+name: Nightly with reusable (Only manual)
+
+on:
+  workflow_dispatch:
+#  schedule:
+#    - cron: '0 0 * * 0-6'
+
+jobs:
+  Build:
+    uses: ./.github/workflows/reusable_build.yml
+    secrets: inherit
+
+  UnitTests:
+    uses: ./.github/workflows/reusable_unit_tests.yml
+    secrets: inherit
+
+  AllUiTests:
+    uses: ./.github/workflows/reusable_ui_tests.yml
+    secrets: inherit
